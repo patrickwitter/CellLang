@@ -1,0 +1,17 @@
+fun g(x, y) = (y + x/y) / 2;
+
+fun f(n, guess) =
+   if guess * guess > n - 1:
+      if guess * guess <= n:
+         guess
+      else
+         f(n, g(n, guess))
+      end
+   else
+      f(n, g(n, guess))
+   end;
+
+f(256, 1);
+
+
+
