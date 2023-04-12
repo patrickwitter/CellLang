@@ -63,7 +63,6 @@ non terminal StmtSequence stmtList;
 non terminal Statement stmt;
 non terminal StmtDefinition definition;
 
-/* ** Fix these declarations ** */
 non terminal StmtFunDefn funDefn;
 non terminal ArrayList<String> paramList;
 non terminal ArrayList<String> paramListE;
@@ -83,8 +82,10 @@ non terminal empty;
 
 /* Grammar rules */
 
+/// A program is a statement list 
 program ::= stmtList:s {: RESULT = new ArithProgram(s); :};
 
+/// A statement list is a list of statements or one statement 
 stmtList ::= stmtList:lst stmt:s {:
 		lst.add(s); 
 		RESULT = lst;
@@ -93,25 +94,36 @@ stmtList ::= stmtList:lst stmt:s {:
 		RESULT = new StmtSequence(s);
 		:};
 
+/// A statement is a definition or expression or a function definition 
+/// All end with a semi colon check rules if you do not see one 
 stmt ::= definition:d {: RESULT = d; :} |
 	 expression:e {: RESULT = new Statement(e); :} SEMI | funDefn:fd {:RESULT = fd;:};
 
-/*If grammer*/
+/*If grammar*/
 StmtIf ::= IF LogExp:le COLON expression:consqt END {:RESULT = new ExpIf(le,consqt);:};
+
+/// IF ELSE grammar 
 StmtIfElse ::= IF LogExp:le COLON expression:consqt ELSE expression:alt END {:RESULT = new ExpIf(le,consqt,alt);:};
+
+/// Logical expression 
 LogExp ::= expression:l CMP:c expression:r {:RESULT = new ExpLogic(l,r,c);:} | expression:l EQU expression:r {:RESULT = new ExpLogic(l,r,Cmp.EQ);:};
 
+/// Function Definition 
 funDefn ::= FUN VAR:v LPAREN paramListE:params RPAREN EQU expression:e SEMI {:RESULT = new StmtFunDefn(v,params,e); :}|  
 FUN VAR:v LPAREN paramListE:params RPAREN EQU LBRACE stmtList:s RBRACE {:RESULT = new StmtFunDefn(v,params,s); :};  /* complete this */
 
+/// List of parameters 
 paramList ::= paramList:pl COMMA VAR:e {:pl.add(e); RESULT = pl;:} | VAR:e {:ArrayList<String> var = new ArrayList<String>(); var.add(e); RESULT = var;:};  
 
+/// List of paramters plus empty 
 paramListE ::= paramList:pl {:RESULT = pl;:} | empty:e {:ArrayList<String> var = new ArrayList<String>(); RESULT = var;:};
 
+/// Variable definition 
 definition ::= VAR:v ASSIGN expression:e SEMI {:
 		   RESULT = new StmtDefinition(v, e);
 		:};
 
+/// An expression can be 
 expression ::= 	expression:e PLUS term:t {:
 			RESULT = new ExpAdd(e, t); :} |
 		expression:e MINUS term:t {:
