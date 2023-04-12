@@ -29,7 +29,7 @@ import lib3652.util.TokenException;
 
 %{
     public int getChar() {
-	return yychar + 1;
+	return (int) (yychar + 1);
     }
 
     public int getColumn() {
