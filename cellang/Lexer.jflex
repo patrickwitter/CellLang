@@ -45,14 +45,19 @@ import lib3652.util.TokenException;
     }
 %}
 
+// Match newline characters (\n or \r)
 nl = [\n\r]
 
+// Match control characters (\b or \f) or newline characters
 cc = ([\b\f]|{nl})
 
+// Match whitespace characters, including control characters and tabs
 ws = {cc}|[\t ]
 
+// Match alphabetic characters (upper- and lower-case) and underscores
 alpha = [a-zA-Z_]
 
+// Match alphanumeric characters (letters and digits)
 alphanum = {alpha}|[0-9]
 
 %%
@@ -78,6 +83,8 @@ alphanum = {alpha}|[0-9]
 <YYINITIAL>	")"	{return new Symbol(sym.RPAREN);}
 <YYINITIAL>	"{"	{return new Symbol(sym.LBRACE);} 
 <YYINITIAL>	"}"	{return new Symbol(sym.RBRACE);}
+<YYINITIAL>	"["	{return new Symbol(sym.LBRAK);}
+<YYINITIAL> "]" {return new Symbol(sym.RBRAK);}
 
 //SEMI COLON 
 <YYINITIAL>	";"	{return new Symbol(sym.SEMI);}
@@ -90,7 +97,9 @@ alphanum = {alpha}|[0-9]
 <YYINITIAL> "else" {return new Symbol(sym.ELSE);}
 <YYINITIAL> "end" {return new Symbol(sym.END);}
 
+// OTHER SYMBOLS
 <YYINITIAL> ":" {return new Symbol(sym.COLON);}
+<YYINITIAL> "." {return new Symbol(sym.DOT);}
 
 /// LOGICAL Symbols 
 <YYINITIAL>	"="	{return new Symbol(sym.EQU);}
@@ -106,11 +115,22 @@ alphanum = {alpha}|[0-9]
 	       return new Symbol(sym.INT, 
 				 Integer.valueOf(yytext()));
 		}
+
 /// Variable Names 
 <YYINITIAL>    {alpha}{alphanum}* {
 	       // VAR
 	       return new Symbol(sym.VAR, yytext());
 		}
+
+<YYINITIAL> "\""    { yybegin(YYINITIAL_QUOTE); } // switch to quote state
+
+<YYINITIAL_QUOTE> [^\\\"\n]*   { } //match any characters except double quotes and newlines
+<YYINITIAL_QUOTE> "\\\"."   { } // match escaped characters
+<YYINITIAL_QUOTE> "\n"     { throw new TokenException("Unterminated string literal"); } // error on newline
+<YYINITIAL_QUOTE> "\""    { yybegin(YYINITIAL); return new Symbol(sym.STRING, yytext()); } // return string token and switch back to initial state
+
+/// CELLANG KEYWORDS
+<YYINITIAL> "table" {return new Symbol(sym.TABLE);}
 
 <YYINITIAL>    \S		{ // error situation
 	       String msg = String.format("Unrecognised Token: %s", yytext());
