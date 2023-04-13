@@ -59,7 +59,7 @@ public class Main {
 	    AssessmentVisitor<S, T> walker;	// to be set
 	    if (walkerName.equals("")) {
 		// walker = new ArithInterpreter();
-		walkerName = "ArithInterpereter";
+		walkerName = "CellInterpereter";
 	    } 
 	    Class<? extends AssessmentVisitor<S, T>> wclass =
 		(Class<? extends AssessmentVisitor<S, T>>) Class.forName(walkerName);
@@ -102,6 +102,13 @@ public class Main {
 	}
     }
 
+	/***
+	 * reads input lines from a given Reader until 
+	 * it encounters a line with a single ''.'' character, 
+	 * and then sends that input to be parsed,
+	 *  walked, and displayed by the parseWalkShow method.
+	 * 
+	 */
     public static <S, T> void readLines(Reader in,
 					AssessmentVisitor<S, T> walker) {
 	LineNumberReader scanner = null;
@@ -140,6 +147,12 @@ public class Main {
 	}
     }
 
+	/**
+	 * The parseWalkShow method reads a program from a given 
+	 * Reader using the AssessmentVisitor and prints the resulting 
+	 * value to the console.
+	 * 
+	 */
     public static <S, T> void parseWalkShow(Reader reader,
 					    AssessmentVisitor<S, T> avisitor) {
 	Result res = avisitor.run(reader);
@@ -160,29 +173,4 @@ public class Main {
 	System.out.println("Result: " + out);
     }
 
-    // public static <S, T> void parseWalkShow(Reader reader,
-    // 					    PersistentWalker<S, T> walker) {
-    // 	ArithParser parser;
-    // 	ArithProgram ast = null; // ArithProgram is top level form
-    // 	try {
-    // 	    parser = new ArithParser(new Lexer(reader));
-    // 	    // now parse the input to produce an AST for the program
-    // 	    ast = (ArithProgram) parser.parse().value;
-    // 	} catch (TokenException te) {
-    // 	    System.out.println("Lexing Error: "+ te.getMessage());
-    // 	} catch (Exception e) {
-    // 	    System.out.println("Parse Error: " + e.getMessage());
-    // 	    //e.printStackTrace();
-    // 	}
-	
-    // 	T result = null;	// type should be same as output of interp
-    // 	if (ast != null)
-    // 	    try {
-    // 		// now walk the AST to evaluate the program.
-    // 		result = walker.walk(ast);
-    // 		System.out.println("\nResult: " + result);
-    // 	    } catch (VisitException e) {
-    // 		System.out.println(e.getMessage());
-    // 	    }
-    // }
 }

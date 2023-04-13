@@ -8,7 +8,7 @@ public class StmtFunDefn extends Statement {
     // Implement this class
     String funName; // This is the function Name 
     ArrayList<String> paramList = new ArrayList<String>(); // parameter list 
-    ArithProgram body; // body 
+    CellProgram body; // body 
     Environment<Integer> closingEnv; // closing env 
 
     public StmtFunDefn(String name,ArrayList<String> listParams, Exp e) {	
@@ -16,7 +16,7 @@ public class StmtFunDefn extends Statement {
 	super("funDef",e);
     funName = name;
     paramList = listParams;
-    body = new ArithProgram( new StmtSequence( new Statement(e)));
+    body = new CellProgram( new StmtSequence( new Statement(e)));
     
     }
 
@@ -26,14 +26,14 @@ public class StmtFunDefn extends Statement {
         super("funDef",bod);
         funName = name;
         paramList = listParams;
-        body = new ArithProgram(bod);
+        body = new CellProgram(bod);
     }
 
     public String getfunName(){
         return funName;
     }
     
-    public ArithProgram getFunBody()
+    public CellProgram getFunBody()
     {
         return body;
     }

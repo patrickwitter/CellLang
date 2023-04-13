@@ -17,7 +17,7 @@ public class ToScheme implements Visitor<Void, String> {
     }
 
     // program
-    public String visitArithProgram(ArithProgram p, Void arg)
+    public String visitCellProgram(CellProgram p, Void arg)
 	throws VisitException {
 	result = (String) p.getSeq().visit(this, arg);
 	return result;

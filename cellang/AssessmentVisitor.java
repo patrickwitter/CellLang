@@ -9,11 +9,9 @@ public abstract class AssessmentVisitor<S, T> extends PersistentWalker<S, T>
     implements Interpreter {
 	/**
 	 * 
-	 * This variable is of type ArithParser which is used to parse the input program and generate an Abstract Syntax Tree (AST).
+	 * 
 	 */
-    ArithParser parser;
-
-	
+    CellParser parser;
     boolean isVerbose = false;
     // PersistentWalker<S, T> walker;
 
@@ -37,10 +35,10 @@ public abstract class AssessmentVisitor<S, T> extends PersistentWalker<S, T>
     }
 
     public Result run(Reader reader) {
-	parser = new ArithParser(new Lexer(reader));
-	ArithProgram program;
+	parser = new CellParser(new Lexer(reader));
+	CellProgram program;
 	try {
-	    program = (ArithProgram) parser.parse().value;
+	    program = (CellProgram) parser.parse().value;
 	} catch (TokenException te) {
 	    if (isVerbose)
 		System.out.println(te.getMessage());

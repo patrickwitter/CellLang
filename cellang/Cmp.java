@@ -1,40 +1,77 @@
 public enum Cmp {
+	//FIXME THESE ERRORS ARE NOT HANDLED PROPERLY
     LT("<") {
-	public boolean apply(double arg1, double arg2) {
-	    return arg1 < arg2;
+	public CellBoolean apply(CellLangType arg1, CellLangType arg2) {
+	    try {
+			return (CellBoolean) arg1.lessThan(arg2) ;
+		} catch (TypeException e) {
+		
+			e.printStackTrace();
+			return new CellBoolean(null);
+		}
 	}
     },
 
     LE("<=") {
-	public boolean apply(double arg1, double arg2) {
-	    return arg1 <= arg2;	// FIXME
+	public CellBoolean apply(CellLangType arg1, CellLangType arg2) {
+	    try {
+			return (CellBoolean) arg1.lessThanOrEqual(arg2);
+		} catch (TypeException e) {
+		
+			e.printStackTrace();
+			return new CellBoolean(null);
+		}	
 	}
     },
 
     EQ("=") {
-	public boolean apply(double arg1, double arg2) {
-	    return arg1 == arg2;	// FIXME
+	public CellBoolean apply(CellLangType arg1, CellLangType arg2) {
+	    try {
+			return (CellBoolean) arg1.areEqual(arg2);
+		} catch (TypeException e) {
+		
+			e.printStackTrace();
+			return new CellBoolean(null);
+		}	
 	}
     },
 
     NE("!=") {
-	public boolean apply(double arg1, double arg2) {
-	    return arg1 != arg2;	// FIXME
+	public CellBoolean apply(CellLangType arg1, CellLangType arg2) {
+	    try {
+			return  (CellBoolean) arg1.notEqual(arg2);
+		} catch (TypeException e) {
+		
+			e.printStackTrace();
+			return new CellBoolean(null);
+		}	
 	}
     },
 
     GT(">") {
-	public boolean apply(double arg1, double arg2) {
-	    return arg1 > arg2 ;	// FIXME
+	public CellBoolean apply(CellLangType arg1, CellLangType arg2) {
+	    try {
+			return (CellBoolean) arg1.greaterThan(arg2) ;
+		} catch (TypeException e) {
+		
+			e.printStackTrace();
+			return new CellBoolean(null);
+		}	
 	}
     },
 
     GE(">=") {
-	public boolean apply(double arg1, double arg2) {
-	    return arg1 >= arg2;	// FIXME
+	public CellBoolean apply(CellLangType arg1, CellLangType arg2) {
+	    try {
+			return (CellBoolean) arg1.greaterThanOrEqual(arg2);
+		} catch (TypeException e) {
+		
+			e.printStackTrace();
+			return new CellBoolean(null);
+		}	
 	}
-    }
-    ;
+    };
+    
 
     private String symbol;
 
@@ -42,9 +79,12 @@ public enum Cmp {
 	symbol = sym;
     }
 
-    public abstract boolean apply(double arg1, double arg2);
+    public abstract CellBoolean apply(CellLangType arg1, CellLangType arg2);
 
     public String toString() {
 	return symbol;
     }
+
+
+
 }

@@ -5,16 +5,15 @@ import lib3652.util.ResultType;
 import lib3652.util.Result;
 import lib3652.util.TokenException;
 
-public class ArithInterpreter extends AssessmentVisitor<Environment<Double>,
-							 Double> {
+public class CellLangToScheme extends AssessmentVisitor<Void, String> {
     /**
      * Create a new Arithmetic Interpreter with a default global environment.
      */ 
-    public ArithInterpreter() {
-	super(new Evaluator(0D));
+    public CellLangToScheme() {
+	super(new ToScheme());
     }
 
-    public Result toResult(Double r) {
-	return new Result(ResultType.V_REAL, r);
+    public Result toResult(String r) {
+	return new Result(ResultType.V_STRING, r);
     }
 }

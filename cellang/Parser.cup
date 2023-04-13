@@ -6,7 +6,7 @@ import java.util.*;
 parser code {:
 		Lexer lexer;
 
-		public ArithParser(Lexer l) {
+		public CellParser(Lexer l) {
 		    // As of CUP v0.11, need to pass Lexer to superclass
 		    super(l);
 		    lexer = l;
@@ -66,7 +66,7 @@ terminal Cmp CMP;
 terminal String STRING;
 
 /* Non terminals */
-non terminal ArithProgram program;
+non terminal CellProgram program;
 non terminal StmtSequence stmtList;
 non terminal Statement stmt;
 non terminal StmtDefinition definition;
@@ -100,7 +100,7 @@ non terminal empty;
 /* Grammar rules */
 
 /// A program is a statement list 
-program ::= stmtList:s {: RESULT = new ArithProgram(s); :};
+program ::= stmtList:s {: RESULT = new CellProgram(s); :};
 
 /// A statement list is a list of statements or one statement 
 stmtList ::= stmtList:lst stmt:s {:

@@ -10,7 +10,7 @@ public interface Visitor<S, T> {
     public S getDefaultState();
 
     // program
-    public T visitArithProgram(ArithProgram p, S arg) throws VisitException;
+    public T visitCellProgram(CellProgram p, S arg) throws VisitException;
 
     // statements
     public T visitStatement(Statement exp, S arg) throws VisitException ;
