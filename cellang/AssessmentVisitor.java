@@ -7,8 +7,13 @@ import lib3652.util.TokenException;
 
 public abstract class AssessmentVisitor<S, T> extends PersistentWalker<S, T>
     implements Interpreter {
-
+	/**
+	 * 
+	 * This variable is of type ArithParser which is used to parse the input program and generate an Abstract Syntax Tree (AST).
+	 */
     ArithParser parser;
+
+	
     boolean isVerbose = false;
     // PersistentWalker<S, T> walker;
 
