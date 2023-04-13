@@ -26,6 +26,7 @@ import lib3652.util.TokenException;
 %char
 %column
 %line
+%state YYINITIAL_QUOTE
 
 %{
     public int getChar() {
@@ -68,6 +69,17 @@ alphanum = {alpha}|[0-9]
 <YYINITIAL>	{ws}	{
 			 // skip whitespace
 			}
+
+/**
+NOTE:  
+	The order of the rules in the lexer file matters, as the lexer reads the 
+	file from top to bottom and tries to match each input character against the defined rules.
+**/
+
+
+/// CELLANG KEYWORDS
+<YYINITIAL> "table" {return new Symbol(sym.TABLE);}
+
 /// Arithmetic Symbols 
 <YYINITIAL>	"+"	{return new Symbol(sym.PLUS);}
 <YYINITIAL>	"-"	{return new Symbol(sym.MINUS);}
@@ -124,13 +136,10 @@ alphanum = {alpha}|[0-9]
 
 <YYINITIAL> "\""    { yybegin(YYINITIAL_QUOTE); } // switch to quote state
 
-<YYINITIAL_QUOTE> [^\\\"\n]*   { } //match any characters except double quotes and newlines
+<YYINITIAL_QUOTE> [^\\\"\n]+   { } //match any characters except double quotes and newlines
 <YYINITIAL_QUOTE> "\\\"."   { } // match escaped characters
 <YYINITIAL_QUOTE> "\n"     { throw new TokenException("Unterminated string literal"); } // error on newline
 <YYINITIAL_QUOTE> "\""    { yybegin(YYINITIAL); return new Symbol(sym.STRING, yytext()); } // return string token and switch back to initial state
-
-/// CELLANG KEYWORDS
-<YYINITIAL> "table" {return new Symbol(sym.TABLE);}
 
 <YYINITIAL>    \S		{ // error situation
 	       String msg = String.format("Unrecognised Token: %s", yytext());
