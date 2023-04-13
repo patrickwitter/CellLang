@@ -188,5 +188,11 @@ public class Evaluator implements Visitor<Environment<Double>, Double> {
 			}
 		}
     }
+
+	@Override
+	public Double visitExpString(ExpString expString, Environment<Double> arg) throws VisitException {
+		//BUG Should return a string 
+		return 33.33;
+	}
 	
 }

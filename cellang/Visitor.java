@@ -32,4 +32,6 @@ public interface Visitor<S, T> {
     public T visitExpLogic(ExpLogic expLogic, S arg) throws VisitException;
 
     public T visitExpIf(ExpIf exp, S arg) throws VisitException;
+
+    public T visitExpString(ExpString expString, S arg) throws VisitException;;
 }

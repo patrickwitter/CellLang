@@ -128,4 +128,10 @@ public class ToScheme implements Visitor<Void, String> {
 		return null;
 	}
 
+	@Override
+	public String visitExpString(ExpString expString, Void arg) throws VisitException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

@@ -40,6 +40,12 @@ scan with {:
 		}
 	  :};
 
+// 
+
+terminal DOT,LBRAK, RBRAK; 
+// CELLANG KEYWORDS 
+terminal TABLE;
+
 /* Terminals (tokens returned by the scanner). */
 // keywords
 terminal FUN;
@@ -57,6 +63,8 @@ terminal PLUS, MINUS, MUL, DIV, MOD, ASSIGN;
 terminal Integer INT;
 terminal String VAR;
 terminal Cmp CMP;     
+terminal String STRING;
+
 /* Non terminals */
 non terminal ArithProgram program;
 non terminal StmtSequence stmtList;
@@ -64,12 +72,21 @@ non terminal Statement stmt;
 non terminal StmtDefinition definition;
 
 non terminal StmtFunDefn funDefn;
+
+/// These will be a list of "VARS" [variables] which have a string value 
+/// This is a list of paramters 
 non terminal ArrayList<String> paramList;
 non terminal ArrayList<String> paramListE;
+
 non terminal ExpFunCall funCall;
+/// These will be a list of Expressions 
 non terminal ArrayList<Exp> argList;
 non terminal ArrayList<Exp> argListE;
-non terminal Exp StmtIf; //TODO replace with IR
+
+non terminal ArrayList<Exp> list;
+non terminal ArrayList<Exp> listE;
+non terminal Exp listConstruct; //BUG Should be EXPList Only for testing 
+non terminal Exp StmtIf; 
 non terminal Exp StmtIfElse;
 non terminal ExpLogic LogExp;
 
@@ -123,12 +140,21 @@ definition ::= VAR:v ASSIGN expression:e SEMI {:
 		   RESULT = new StmtDefinition(v, e);
 		:};
 
-/// An expression can be 
+/// NOTE SEMI COLON IS AT STATEMENT LEVEL 
+/// Every expression ends with a semi colon 
 expression ::= 	expression:e PLUS term:t {:
 			RESULT = new ExpAdd(e, t); :} |
 		expression:e MINUS term:t {:
 			RESULT = new ExpSub(e, t); :} |
-		term:t {: RESULT = t; :} | StmtIf:t {:RESULT = t;:} | StmtIfElse:e {:RESULT = e;:};
+		term:t {: RESULT = t; :} | StmtIf:t {:RESULT = t;:} | StmtIfElse:e {:RESULT = e;:} |
+		listConstruct:l {: RESULT = l; :};
+
+listConstruct ::= LBRAK listE:l RBRAK {: RESULT = new ExpLit(50); :}; //BUG Should be a list not literal 
+/// List of expressions 
+list ::= list:l COMMA expression:e {:l.add(e); RESULT = l;:} | expression:e {:ArrayList<Exp> ae = new ArrayList<Exp>(); ae.add(e); RESULT = ae;:};  
+
+/// List of expressions inclusive of empty list 
+listE ::= list:l {:RESULT = l;:} | empty:e {:RESULT = new ArrayList<Exp>(); :};
 
 term ::= term:t MUL factor:f {:
 		RESULT = new ExpMul(t, f); :} |
@@ -138,15 +164,17 @@ term ::= term:t MUL factor:f {:
 		RESULT = new ExpMod(t, f); :} |
 	 factor:f {: RESULT = f; :};
 
+factor ::= INT:ilit {: RESULT = new ExpLit(ilit); :} |
+		STRING:s {:RESULT = new ExpString(s); :} | 
+		VAR:var {: RESULT = new ExpVar(var); :} |
+		LPAREN expression:e RPAREN {: RESULT = e; :}	| funCall:fc {:RESULT = fc;:};
+
 funCall ::= VAR:v LPAREN argListE:a RPAREN {:RESULT = new ExpFunCall(v,a);:};
 
+/// List of arguement expressions
 argList ::= argList:al COMMA expression:e {:al.add(e); RESULT = al;:} | expression:e {:ArrayList<Exp> ae = new ArrayList<Exp>(); ae.add(e); RESULT = ae;:};  
 
+/// List of arguement expressions inclusive of the empty arguement 
 argListE ::= argList:pl {:RESULT = pl;:} | empty:e {:RESULT = new ArrayList<Exp>(); :};
-
-
-factor ::= INT:ilit {: RESULT = new ExpLit(ilit); :} |
-	   VAR:var {: RESULT = new ExpVar(var); :} |
-	   LPAREN expression:e RPAREN {: RESULT = e; :}	| funCall:fc {:RESULT = fc;:};
 
 empty ::= ;
