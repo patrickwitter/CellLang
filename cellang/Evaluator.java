@@ -28,6 +28,7 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
     }
 
 	// Visits a StmtSequence node and evaluates each of its statements in order
+	// Returns the value of the last statement 
     public CellLangType visitStmtSequence(StmtSequence sseq, Environment<CellLangType> env)
 	throws VisitException {
 		Statement s;
@@ -51,7 +52,7 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 	CellLangType result;
 	result = sd.getExp().visit(this, env);
 	env.put(sd.getVar(), result);
-	return result;
+	return new CellNil();
     }
 
 	// Visits a StmtFunDefn node and creates a closure of the function with the current environment, then adds the closure to the environment
