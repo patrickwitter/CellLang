@@ -45,4 +45,9 @@ public class CellBoolean extends CellLangType<Boolean>{
 		throw new TypeException();
 	}
 
+	@Override
+	public String toString() {
+		return getValue() ? "true" : "false";
+	}
+
 }
