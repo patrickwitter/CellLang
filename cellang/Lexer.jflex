@@ -27,9 +27,15 @@ import lib3652.util.TokenException;
 %column
 %line
 %state YYINITIAL_QUOTE
+%state PARSE_STRING, ESCAPE_SEQUENCE
+%state BLK_COMMENT
 
 %{
 	StringBuffer stringBuffer;
+
+	StringBuffer strBuff = new StringBuffer();
+
+	int nestedBlockCommentCount = 0;
 
     public int getChar() {
 	return (int) (yychar + 1);
@@ -62,6 +68,8 @@ alpha = [a-zA-Z_]
 
 // Match alphanumeric characters (letters and digits)
 alphanum = {alpha}|[0-9]
+
+blockCommentChar = [^"/*""*/"]
 
 %%
 
@@ -142,6 +150,22 @@ NOTE:
 <YYINITIAL_QUOTE> "\\".   { stringBuffer.append(yytext().substring(1)); } // match escaped characters and append the unescaped character
 <YYINITIAL_QUOTE> \n     { throw new TokenException("Unterminated string literal"); } // error on newline
 <YYINITIAL_QUOTE> \"    { yybegin(YYINITIAL); return new Symbol(sym.STRING, stringBuffer.toString()); } // return string token and switch back to initial state
+
+<YYINITIAL>	"//"~{nl}	{/* Line comment. Do Nothing*/}
+
+<YYINITIAL>	"/*"	{nestedBlockCommentCount += 1;
+					yychar -= 2;
+					yybegin(BLK_COMMENT);}
+<BLK_COMMENT> {
+	"/*"	{nestedBlockCommentCount += 1;
+			yychar -= 2;}
+	"*/"	{nestedBlockCommentCount -= 1;
+			yychar -= 2;
+			if (nestedBlockCommentCount == 0){
+				yybegin(YYINITIAL);
+			}}
+	{blockCommentChar}+	{yychar -= yytext().length();}
+}
 
 <YYINITIAL>    \S		{ // error situation
 	       String msg = String.format("Unrecognised Token: %s", yytext());
