@@ -149,7 +149,7 @@ expression ::= 	expression:e PLUS term:t {:
 		term:t {: RESULT = t; :} | StmtIf:t {:RESULT = t;:} | StmtIfElse:e {:RESULT = e;:} |
 		listConstruct:l {: RESULT = l; :};
 
-listConstruct ::= LBRAK listE:l RBRAK {: RESULT = new ExpLit(50); :}; //BUG Should be a list not literal 
+listConstruct ::= LBRAK listE:l RBRAK {: RESULT = new ExpList(l); :}; //BUG Should be a list not literal 
 /// List of expressions 
 list ::= list:l COMMA expression:e {:l.add(e); RESULT = l;:} | expression:e {:ArrayList<Exp> ae = new ArrayList<Exp>(); ae.add(e); RESULT = ae;:};  
 
