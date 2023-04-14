@@ -29,6 +29,8 @@ import lib3652.util.TokenException;
 %state YYINITIAL_QUOTE
 
 %{
+	StringBuffer stringBuffer;
+
     public int getChar() {
 	return (int) (yychar + 1);
     }
@@ -134,12 +136,12 @@ NOTE:
 	       return new Symbol(sym.VAR, yytext());
 		}
 
-<YYINITIAL> "\""    { yybegin(YYINITIAL_QUOTE); } // switch to quote state
+<YYINITIAL> \"    { yybegin(YYINITIAL_QUOTE); stringBuffer = new StringBuffer(); } // switch to quote state
 
-<YYINITIAL_QUOTE> [^\\\"\n]+   { } //match any characters except double quotes and newlines
-<YYINITIAL_QUOTE> "\\\"."   { } // match escaped characters
-<YYINITIAL_QUOTE> "\n"     { throw new TokenException("Unterminated string literal"); } // error on newline
-<YYINITIAL_QUOTE> "\""    { yybegin(YYINITIAL); return new Symbol(sym.STRING, yytext()); } // return string token and switch back to initial state
+<YYINITIAL_QUOTE> [^\\\"\n]+   { stringBuffer.append(yytext()); } // match any characters except double quotes and backslashes
+<YYINITIAL_QUOTE> "\\".   { stringBuffer.append(yytext().substring(1)); } // match escaped characters and append the unescaped character
+<YYINITIAL_QUOTE> \n     { throw new TokenException("Unterminated string literal"); } // error on newline
+<YYINITIAL_QUOTE> \"    { yybegin(YYINITIAL); return new Symbol(sym.STRING, stringBuffer.toString()); } // return string token and switch back to initial state
 
 <YYINITIAL>    \S		{ // error situation
 	       String msg = String.format("Unrecognised Token: %s", yytext());
