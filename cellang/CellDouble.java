@@ -187,4 +187,9 @@ public class CellDouble extends CellLangType<Double> {
 		
 		throw new TypeException();
 	}
+
+	@Override
+	public String toString() {
+		return getValue().toString();
+	}
 }

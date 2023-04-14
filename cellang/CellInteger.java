@@ -212,4 +212,9 @@ public class CellInteger extends CellLangType<Integer>{
 		throw new TypeException();
 	}
 
+	@Override
+	public String toString() {
+		return getValue().toString();
+	}
+
 }
