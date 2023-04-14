@@ -180,8 +180,7 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 
 	@Override
 	public CellLangType visitExpString(ExpString expString, Environment<CellLangType> arg) throws VisitException {
-		//BUG Should return a string 
-		return new CellDouble(33.33);
+		return new CellString( expString.getVal() );
 	}
 
 	

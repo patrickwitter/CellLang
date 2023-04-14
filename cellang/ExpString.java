@@ -1,4 +1,4 @@
-/// Hello
+
 public class ExpString extends Exp {
 
     String val;
