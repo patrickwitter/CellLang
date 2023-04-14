@@ -317,6 +317,8 @@ public class Lexer implements java_cup.runtime.Scanner {
   private boolean zzEOFDone;
 
   /* user code: */
+	StringBuffer stringBuffer;
+
     public int getChar() {
 	return (int) (yychar + 1);
     }
@@ -767,7 +769,7 @@ public class Lexer implements java_cup.runtime.Scanner {
           // fall through
           case 40: break;
           case 4:
-            { yybegin(YYINITIAL_QUOTE);
+            { yybegin(YYINITIAL_QUOTE); stringBuffer = new StringBuffer();
             }
           // fall through
           case 41: break;
@@ -875,7 +877,7 @@ public class Lexer implements java_cup.runtime.Scanner {
           // fall through
           case 61: break;
           case 25:
-            { yyappend(yytext());
+            { stringBuffer.append(yytext());
             }
           // fall through
           case 62: break;
@@ -885,7 +887,7 @@ public class Lexer implements java_cup.runtime.Scanner {
           // fall through
           case 63: break;
           case 27:
-            { yybegin(YYINITIAL); return new Symbol(sym.STRING, yytext());
+            { yybegin(YYINITIAL); return new Symbol(sym.STRING, stringBuffer.toString());
             }
           // fall through
           case 64: break;
@@ -915,7 +917,7 @@ public class Lexer implements java_cup.runtime.Scanner {
           // fall through
           case 69: break;
           case 33:
-            { yyappend(yytext().substring(1));
+            { stringBuffer.append(yytext().substring(1));
             }
           // fall through
           case 70: break;

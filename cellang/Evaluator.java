@@ -183,6 +183,18 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 		return new CellString( expString.getVal() );
 	}
 
+	@Override
+	public CellLangType visitList(ExpList expList, Environment<CellLangType> arg) throws VisitException {
+		
+		CellList x =  new CellList();
+		for (Exp i : expList.getValue())
+		{
+			x.add(i.visit(this, arg));
+		}
+
+		return x;
+	}
+
 	
 	
 }

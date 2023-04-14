@@ -688,7 +688,7 @@ class CUP$CellParser$actions {
 		int lleft = ((java_cup.runtime.Symbol)CUP$CellParser$stack.elementAt(CUP$CellParser$top-1)).left;
 		int lright = ((java_cup.runtime.Symbol)CUP$CellParser$stack.elementAt(CUP$CellParser$top-1)).right;
 		ArrayList<Exp> l = (ArrayList<Exp>)((java_cup.runtime.Symbol) CUP$CellParser$stack.elementAt(CUP$CellParser$top-1)).value;
-		 RESULT = new ExpLit(50); 
+		 RESULT = new ExpList(l); 
               CUP$CellParser$result = parser.getSymbolFactory().newSymbol("listConstruct",12, ((java_cup.runtime.Symbol)CUP$CellParser$stack.elementAt(CUP$CellParser$top-2)), ((java_cup.runtime.Symbol)CUP$CellParser$stack.peek()), RESULT);
             }
           return CUP$CellParser$result;

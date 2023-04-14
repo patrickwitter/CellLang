@@ -1,10 +1,18 @@
+import java.util.ArrayList;
 import java.util.List;
 
 public class CellList extends CellLangType<List<CellLangType>>{
-    public CellList(List<CellLangType> l ){
-        super(l);
+
+    public CellList(){
+        
+        super(new ArrayList<>());
     }
 
+    public CellList(List<CellLangType> l){
+        
+        super(l);
+    }
+    
     @Override
     public String toString() {
         String result = "[";
@@ -19,5 +27,11 @@ public class CellList extends CellLangType<List<CellLangType>>{
         result += " ]";
 
         return result;
+    }
+
+    @Override
+    public CellLangType add(CellLangType v) throws TypeException {
+        getValue().add(v);
+        return new CellNil();
     }
 }
