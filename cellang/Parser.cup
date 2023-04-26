@@ -85,7 +85,7 @@ non terminal ArrayList<Exp> argListE;
 
 non terminal ArrayList<Exp> list;
 non terminal ArrayList<Exp> listE;
-non terminal Exp listConstruct; //BUG Should be EXPList Only for testing 
+non terminal Exp listConstruct; 
 non terminal Exp StmtIf; 
 non terminal Exp StmtIfElse;
 non terminal ExpLogic LogExp;
@@ -98,7 +98,7 @@ non terminal Exp factor;
 non terminal empty;
 
 /* Grammar rules */
-
+//BUG IFSTATEMENT SHOULD BE A STATEMENT 
 /// A program is a statement list 
 program ::= stmtList:s {: RESULT = new CellProgram(s); :};
 
@@ -149,7 +149,8 @@ expression ::= 	expression:e PLUS term:t {:
 		term:t {: RESULT = t; :} | StmtIf:t {:RESULT = t;:} | StmtIfElse:e {:RESULT = e;:} |
 		listConstruct:l {: RESULT = l; :};
 
-listConstruct ::= LBRAK listE:l RBRAK {: RESULT = new ExpList(l); :}; //BUG Should be a list not literal 
+/// This is the list 
+listConstruct ::= LBRAK listE:l RBRAK {: RESULT = new ExpList(l); :}; 
 /// List of expressions 
 list ::= list:l COMMA expression:e {:l.add(e); RESULT = l;:} | expression:e {:ArrayList<Exp> ae = new ArrayList<Exp>(); ae.add(e); RESULT = ae;:};  
 
