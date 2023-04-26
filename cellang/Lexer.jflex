@@ -137,6 +137,11 @@ NOTE:
 	       return new Symbol(sym.INT, 
 				 Integer.valueOf(yytext()));
 		}
+<YYINITIAL>    [0-9]*.[0-9]+ {
+	       // INTEGER
+	       return new Symbol(sym.DOUBLE, 
+				 Double.valueOf(yytext()));
+		}
 
 /// Variable Names 
 <YYINITIAL>    {alpha}{alphanum}* {

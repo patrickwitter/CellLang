@@ -33,6 +33,7 @@ public class sym {
   public static final int MUL = 20;
   public static final int EQU = 13;
   public static final int VAR = 25;
+  public static final int DOUBLE = 28;
   public static final int FUN = 6;
   public static final String[] terminalNames = new String[] {
   "EOF",
@@ -62,7 +63,8 @@ public class sym {
   "INT",
   "VAR",
   "CMP",
-  "STRING"
+  "STRING",
+  "DOUBLE"
   };
 }
 

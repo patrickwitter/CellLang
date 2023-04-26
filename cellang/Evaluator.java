@@ -196,6 +196,11 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 		return x;
 	}
 
+	@Override
+	public CellLangType visitExpDouble(ExpDouble expDouble, Environment<CellLangType> arg) throws VisitException {
+		return new CellDouble((Double) expDouble.getVal());
+	}
+
 	
 	
 }

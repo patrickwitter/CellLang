@@ -140,4 +140,10 @@ public class ToScheme implements Visitor<Void, String> {
 		return null;
 	}
 
+	@Override
+	public String visitExpDouble(ExpDouble expDouble, Void arg) throws VisitException {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitExpDouble'");
+	}
+
 }

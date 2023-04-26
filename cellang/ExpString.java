@@ -1,7 +1,7 @@
 
 public class ExpString extends Exp {
 
-    String val;
+    private String val;
 
     public ExpString(String v) {
 	super(v.toString());

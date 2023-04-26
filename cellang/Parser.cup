@@ -64,6 +64,7 @@ terminal Integer INT;
 terminal String VAR;
 terminal Cmp CMP;     
 terminal String STRING;
+terminal Double DOUBLE;
 
 /* Non terminals */
 non terminal CellProgram program;
@@ -167,6 +168,7 @@ term ::= term:t MUL factor:f {:
 
 factor ::= INT:ilit {: RESULT = new ExpLit(ilit); :} |
 		STRING:s {:RESULT = new ExpString(s); :} | 
+		DOUBLE:d {:RESULT = new ExpDouble(d); :} |
 		VAR:var {: RESULT = new ExpVar(var); :} |
 		LPAREN expression:e RPAREN {: RESULT = e; :}	| funCall:fc {:RESULT = fc;:};
 

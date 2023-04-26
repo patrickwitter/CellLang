@@ -35,5 +35,7 @@ public interface Visitor<S, T> {
 
     public T visitExpString(ExpString expString, S arg) throws VisitException;
 
-    public T visitList(ExpList expList, S arg) throws VisitException;;
+    public T visitList(ExpList expList, S arg) throws VisitException;
+
+    public T visitExpDouble(ExpDouble expDouble, S arg) throws VisitException;
 }
