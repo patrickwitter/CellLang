@@ -27,3 +27,18 @@ A domain specific prgramming language that allows users to express tabular formu
 
 * **./run.sh** (RUN in bash window on windows )
 
+## WORKFLOW
+
+### Adding a new DataType 
+
+* Add a new CellLang type. This means extend the base class and create a type. Implement the operations that you want to be done on the type 
+
+* Create an Expression type. This means extend
+the EXP class and implement the methods 
+
+* By extending the EXP class you will have to implement the visitor methods 
+
+* Add necessary tokens to Lexer 
+
+* Add parsing rules to parser 
+
