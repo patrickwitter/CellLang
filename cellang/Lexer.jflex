@@ -137,8 +137,8 @@ NOTE:
 	       return new Symbol(sym.INT, 
 				 Integer.valueOf(yytext()));
 		}
-<YYINITIAL>    [0-9]*.[0-9]+ {
-	       // INTEGER
+<YYINITIAL>    [0-9]*"."[0-9]+ {
+	       // DOUBLE
 	       return new Symbol(sym.DOUBLE, 
 				 Double.valueOf(yytext()));
 		}
@@ -148,7 +148,7 @@ NOTE:
 	       // VAR
 	       return new Symbol(sym.VAR, yytext());
 		}
-
+// STRINGS
 <YYINITIAL> \"    { yybegin(YYINITIAL_QUOTE); stringBuffer = new StringBuffer(); } // switch to quote state
 
 <YYINITIAL_QUOTE> [^\\\"\n]+   { stringBuffer.append(yytext()); } // match any characters except double quotes and backslashes
