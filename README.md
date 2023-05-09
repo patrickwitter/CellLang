@@ -9,11 +9,11 @@ A domain specific prgramming language that allows users to express tabular formu
   ### **Script descriptions**
   + **run.*** (Run lexer , parser, compile and Run the language to accept some user input)
 
-  + **runarg.*** (Run lexer , parser, compile  and Run the language to compile some existing program ) 
+  + **runarg.*** [path/to/prog] (Run lexer , parser, compile  and Run the language to compile some existing program ) 
 
   + **runTest.*** (Run lexer , parser and compile the language)
 
-  + **runargf.*** (Run the language to compile some existing program ) 
+  + **runargf.*** [path/to/prog] (Run the language to compile some existing program ) 
   + **runf.*** (Run the language to accept some user input)
 
 ## Before Using Scripts  

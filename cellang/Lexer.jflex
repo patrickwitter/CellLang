@@ -98,7 +98,7 @@ NOTE:
 <YYINITIAL>	"%"	{return new Symbol(sym.MOD);}
 
 /// Assignment 
-<YYINITIAL>	":="	{return new Symbol(sym.ASSIGN);}
+<YYINITIAL>	"="	{return new Symbol(sym.ASSIGN);}
 
 /// Braces 
 <YYINITIAL>	"("	{return new Symbol(sym.LPAREN);}
@@ -124,7 +124,7 @@ NOTE:
 <YYINITIAL> "." {return new Symbol(sym.DOT);}
 
 /// LOGICAL Symbols 
-<YYINITIAL>	"="	{return new Symbol(sym.EQU);}
+<YYINITIAL>	"=="	{return new Symbol(sym.EQU);}
 <YYINITIAL> "<" {return new Symbol(sym.CMP,Cmp.LT);}
 <YYINITIAL> "<=" {return new Symbol(sym.CMP,Cmp.LE);}
 <YYINITIAL> "!=" {return new Symbol(sym.CMP,Cmp.NE);}

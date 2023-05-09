@@ -127,8 +127,8 @@ StmtIfElse ::= IF LogExp:le COLON expression:consqt ELSE expression:alt END {:RE
 LogExp ::= expression:l CMP:c expression:r {:RESULT = new ExpLogic(l,r,c);:} | expression:l EQU expression:r {:RESULT = new ExpLogic(l,r,Cmp.EQ);:};
 
 /// Function Definition 
-funDefn ::= FUN VAR:v LPAREN paramListE:params RPAREN EQU expression:e SEMI {:RESULT = new StmtFunDefn(v,params,e); :}|  
-FUN VAR:v LPAREN paramListE:params RPAREN EQU LBRACE stmtList:s RBRACE {:RESULT = new StmtFunDefn(v,params,s); :};  /* complete this */
+funDefn ::= FUN VAR:v LPAREN paramListE:params RPAREN ASSIGN expression:e SEMI {:RESULT = new StmtFunDefn(v,params,e); :}|  
+FUN VAR:v LPAREN paramListE:params RPAREN ASSIGN LBRACE stmtList:s RBRACE {:RESULT = new StmtFunDefn(v,params,s); :};  /* complete this */
 
 /// List of parameters 
 paramList ::= paramList:pl COMMA VAR:e {:pl.add(e); RESULT = pl;:} | VAR:e {:ArrayList<String> var = new ArrayList<String>(); var.add(e); RESULT = var;:};  

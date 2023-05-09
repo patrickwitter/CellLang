@@ -1,4 +1,4 @@
-fun f(n) = if n = 0: 1 else n * f(n-1) end;
+fun f(n) = if n == 0: 1 else n * f(n-1) end;
 
 f(5);
 

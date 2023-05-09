@@ -82,6 +82,10 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
             throw new RuntimeException("Function not defined or defined after Call");
         }
 
+		if(funDef.getFunction().paramList.size() != fc.args.size())
+		{
+			throw new RuntimeException("Numerical Mismatch between number of paramaters of function definition and arguements in function call");
+		}
         for(int i = 0; i < fc.args.size(); i++)
         {
             CellLangType answer = fc.args.get(i).visit(this, env);

@@ -93,7 +93,7 @@ public class CellParser extends java_cup.runtime.lr_parser {
     "\030\001\002\000\004\011\031\001\002\000\006\012\uffd4" +
     "\033\032\001\002\000\006\012\ufff2\016\ufff2\001\002\000" +
     "\006\012\ufff1\016\071\001\002\000\004\012\036\001\002" +
-    "\000\004\012\ufff0\001\002\000\004\017\037\001\002\000" +
+    "\000\004\012\ufff0\001\002\000\004\031\037\001\002\000" +
     "\022\005\016\011\010\014\040\021\007\032\005\033\041" +
     "\035\013\036\026\001\002\000\022\005\016\010\027\011" +
     "\010\021\007\032\005\033\024\035\013\036\026\001\002" +
@@ -505,7 +505,7 @@ class CUP$CellParser$actions {
           return CUP$CellParser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 12: // funDefn ::= FUN VAR LPAREN paramListE RPAREN EQU expression SEMI 
+          case 12: // funDefn ::= FUN VAR LPAREN paramListE RPAREN ASSIGN expression SEMI 
             {
               StmtFunDefn RESULT =null;
 		int vleft = ((java_cup.runtime.Symbol)CUP$CellParser$stack.elementAt(CUP$CellParser$top-6)).left;
@@ -523,7 +523,7 @@ class CUP$CellParser$actions {
           return CUP$CellParser$result;
 
           /*. . . . . . . . . . . . . . . . . . . .*/
-          case 13: // funDefn ::= FUN VAR LPAREN paramListE RPAREN EQU LBRACE stmtList RBRACE 
+          case 13: // funDefn ::= FUN VAR LPAREN paramListE RPAREN ASSIGN LBRACE stmtList RBRACE 
             {
               StmtFunDefn RESULT =null;
 		int vleft = ((java_cup.runtime.Symbol)CUP$CellParser$stack.elementAt(CUP$CellParser$top-7)).left;

@@ -145,7 +145,7 @@ public class Lexer implements java_cup.runtime.Scanner {
   private static final String ZZ_ROWMAP_PACKED_0 =
     "\0\0\0\52\0\124\0\176\0\250\0\250\0\124\0\124"+
     "\0\322\0\250\0\250\0\250\0\250\0\250\0\250\0\250"+
-    "\0\250\0\250\0\374\0\u0126\0\u0150\0\250\0\u017a\0\250"+
+    "\0\250\0\250\0\374\0\u0126\0\250\0\250\0\u0150\0\u017a"+
     "\0\u01a4\0\u01ce\0\250\0\250\0\u01f8\0\u0222\0\u024c\0\u0276"+
     "\0\250\0\250\0\250\0\124\0\u02a0\0\124\0\124\0\u02ca"+
     "\0\u02f4\0\u031e\0\u0348\0\250\0\124\0\124\0\u0372\0\124"+
@@ -858,7 +858,7 @@ public class Lexer implements java_cup.runtime.Scanner {
           // fall through
           case 60: break;
           case 18:
-            { return new Symbol(sym.EQU);
+            { return new Symbol(sym.ASSIGN);
             }
           // fall through
           case 61: break;
@@ -933,12 +933,12 @@ public class Lexer implements java_cup.runtime.Scanner {
           // fall through
           case 74: break;
           case 32:
-            { return new Symbol(sym.ASSIGN);
+            { return new Symbol(sym.CMP,Cmp.LE);
             }
           // fall through
           case 75: break;
           case 33:
-            { return new Symbol(sym.CMP,Cmp.LE);
+            { return new Symbol(sym.EQU);
             }
           // fall through
           case 76: break;

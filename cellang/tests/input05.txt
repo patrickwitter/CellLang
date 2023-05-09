@@ -1,8 +1,8 @@
-y := 3;
+y = 3;
 fun g(x) = x * 5;
 
 fun f(x) = {
-    y := g(x);
+    y = g(x);
     x + y;
     }
 f(2);
