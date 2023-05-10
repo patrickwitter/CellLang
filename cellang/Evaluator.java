@@ -268,6 +268,12 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 		return new CellNil();
 	}
 
+	@Override
+	public CellLangType visitIfStatement(IfStatement ifStatement, Environment<CellLangType> state)
+			throws VisitException {
+		return new CellInteger(999);
+	}
+
 	
 	
 }

@@ -88,8 +88,10 @@ non terminal ArrayList<Exp> argListE;
 non terminal ArrayList<Exp> list;
 non terminal ArrayList<Exp> listE;
 non terminal ExpList listConstruct; 
-non terminal Exp StmtIf; 
-non terminal Exp StmtIfElse;
+non terminal Exp ExpIf; 
+non terminal Exp ExpIfElse;
+non terminal IfStatement ifStmt;
+non terminal IfStatement ifElseStmt;
 non terminal ExpLogic LogExp;
 non terminal ExpLogic LogStmt;
 
@@ -131,7 +133,8 @@ stmtList ::= stmtList:lst stmt:s {:
 /// Values that return nil or strictly expressions should be statments 
 
 stmt ::= definition:d {: RESULT = d; :} |
-	 expression:e {: RESULT = new Statement(e); :} SEMI | funDefn:fd {:RESULT = fd;:} | print:p {: RESULT = p; :} SEMI;
+	 expression:e {: RESULT = new Statement(e); :} SEMI | funDefn:fd {:RESULT = fd;:} | print:p {: RESULT = p; :} SEMI |
+	 ifStmt:i {:RESULT = i;:} | ifElseStmt:i {:RESULT = i;:};
 
 // Print Statements 
 print ::= PRINT LPAREN expression:exp RPAREN
@@ -140,10 +143,18 @@ print ::= PRINT LPAREN expression:exp RPAREN
 	  	  {: RESULT = new PrintlnStatement(exp); :};
 
 /*If grammar*/
-StmtIf ::= IF LogExp:le COLON expression:consqt END {:RESULT = new ExpIf(le,consqt);:};
+ExpIf ::= IF LogExp:le COLON expression:consqt END {:RESULT = new ExpIf(le,consqt);:};
 
 /// IF ELSE grammar 
-StmtIfElse ::= IF LogExp:le COLON expression:consqt ELSE expression:alt END {:RESULT = new ExpIf(le,consqt,alt);:};
+ExpIfElse ::= IF LogExp:le COLON expression:consqt ELSE expression:alt END {:RESULT = new ExpIf(le,consqt,alt);:};
+
+//TODO IMPLEMENT IF STATEMENT
+// NOTE THAT SEMI COLONA HAVE TO BE EXPLICIT WITH STATEMENTS 
+/// IF STMT 
+ifStmt ::= IF LogExp:le LBRACE expression:consqt RBRACE {:RESULT =  new IfStatement(consqt);:};
+
+/// IFELSE STMT 
+ifElseStmt ::= IF LogExp:le LBRACE expression:consqt RBRACE ELSE LBRACE expression:alt RBRACE {:RESULT =  new IfStatement(consqt);:};
 
 /// Logical expression 
 LogExp ::= expression:l CMP:c expression:r {:RESULT = new ExpLogic(l,r,c);:} | expression:l EQU expression:r {:RESULT = new ExpLogic(l,r,Cmp.EQ);:};
@@ -170,7 +181,7 @@ expression ::= 	expression:e PLUS term:t {:
 			RESULT = new ExpAdd(e, t); :} |
 		expression:e MINUS term:t {:
 			RESULT = new ExpSub(e, t); :} | 
-		term:t {: RESULT = t; :} | StmtIf:t {:RESULT = t;:} | StmtIfElse:e {:RESULT = e;:} |
+		term:t {: RESULT = t; :} |
 		listConstruct:l {: RESULT = l; :} | tableExp:table {:RESULT = table;:} | LogStmt:e {:RESULT = e;:};
 
 /// This is the list 
@@ -200,7 +211,7 @@ term ::= term:t MUL factor:f {:
 		RESULT = new ExpDiv(t, f); :} |
 	 term:t MOD factor:f {:
 		RESULT = new ExpMod(t, f); :} |
-	 factor:f {: RESULT = f; :};
+	 factor:f {: RESULT = f; :} | ExpIf:t {:RESULT = t;:} | ExpIfElse:e {:RESULT = e;:};
 
 factor ::= INT:ilit {: RESULT = new ExpLit(ilit); :} |
 		STRING:s {:RESULT = new ExpString(s); :} | 

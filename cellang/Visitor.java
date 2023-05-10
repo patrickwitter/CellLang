@@ -44,4 +44,6 @@ public interface Visitor<S, T> {
     public T visitExpPrint(PrintStatement expPrint, S state)throws VisitException;
 
     public T visitExpPrintln(PrintlnStatement expPrintln, S state) throws VisitException;
+
+    public T visitIfStatement(IfStatement ifStatement, S state) throws VisitException;
 }

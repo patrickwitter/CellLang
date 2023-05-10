@@ -164,4 +164,10 @@ public class ToScheme implements Visitor<Void, String> {
 		throw new UnsupportedOperationException("Unimplemented method 'visitExpPrintln'");
 	}
 
+	@Override
+	public String visitIfStatement(IfStatement ifStatement, Void state) throws VisitException {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitIfStatement'");
+	}
+
 }
