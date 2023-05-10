@@ -42,8 +42,8 @@ public class CellInteger extends CellLangType<Integer>{
 	{
 		if(v instanceof CellInteger)
 		{
-			Integer result = (Integer)getValue() / (Integer)v.getValue();
-			return new CellInteger(result);
+			Double result = Double.valueOf((Integer)getValue()) / (Integer)v.getValue();
+			return new CellDouble(result);
 		}
 
 		if(v instanceof CellDouble)
@@ -58,7 +58,12 @@ public class CellInteger extends CellLangType<Integer>{
 	public CellLangType sub(CellLangType v) throws TypeException
 	{
 		if(v instanceof CellInteger)
-		{
+		{	
+			// String a = ((Integer)getValue()).toString();
+			// String b = ((Integer)v.getValue()).toString();
+
+			// System.out.print("Subtracting" + a +"-" + b);
+
 			Integer result = (Integer)getValue() - (Integer)v.getValue();
 			return new CellInteger(result);
 		}
