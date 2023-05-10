@@ -158,7 +158,16 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 	//This method visits an expression logical operator node and returns the result of evaluating the operator.
 	public CellLangType visitExpLogic(ExpLogic exp, Environment<CellLangType> env)
 	throws VisitException {
-		CellBoolean b =	exp.operator.apply( exp.left.visit(this, env), exp.right.visit(this, env));
+
+		/// If left is not a table  and right is a table 
+		/// We throw a runtime error as that doesn't make any sense 
+		/// i.e 2 > tablex ???
+
+		if ( !(exp.left instanceof ExpTable) && exp.right instanceof ExpTable )
+		{
+			throw new VisitException("Tabular boolean operation must have the table on the left side", null);
+		}
+		CellLangType b =	exp.operator.apply( exp.left.visit(this, env), exp.right.visit(this, env));
 		return b;
     }
 
@@ -203,6 +212,60 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 	@Override
 	public CellLangType visitExpDouble(ExpDouble expDouble, Environment<CellLangType> arg) throws VisitException {
 		return new CellDouble((Double) expDouble.getVal());
+	}
+
+	@Override
+	public CellLangType visitExpTable(ExpTable expTable, Environment<CellLangType> arg) throws VisitException {
+		CellList rows = new CellList();
+		CellList columns = new CellList();
+
+		for (Exp c: expTable.getCol().getValue()) {
+			CellLangType colEntry = c.visit(this, arg);
+
+		    columns.add(new CellString(colEntry.getValue().toString()));	
+			
+		}
+
+		switch(expTable.getName())
+		{
+			case("no rows"):
+							 return new CellTable(columns);
+			case("num rows"):
+							 return new CellTable(columns, expTable.getNumRows());
+			case("rows specified"):
+								// System.out.println("ROW");
+								// System.out.println(expTable.getRows());
+								
+									
+								
+							 for (ExpList rowEn: expTable.getRows()) {
+								// System.out.println("ROW Entry");
+								// System.out.println(rowEn.visit(this, arg));
+								CellList rowEntry = new CellList();
+								 for(Exp e: rowEn.getValue())
+								 {
+									rowEntry.add(e.visit(this, arg));
+								 }
+								 rows.add(rowEntry);
+							}
+							 return new CellTable(columns, rows);
+			default:
+						throw new VisitException("Illegal initialization of Table");	
+		}
+	}
+
+	@Override
+	public CellLangType visitExpPrint(PrintStatement expPrint, Environment<CellLangType> state) throws VisitException {
+		CellLangType r = expPrint.getSubTree(0).visit(this, state);
+		System.out.print(r.toString());
+		return new CellNil();
+	}
+
+	@Override
+	public CellLangType visitExpPrintln(PrintlnStatement expPrintln, Environment<CellLangType> state) throws VisitException {
+		CellLangType r = expPrintln.getSubTree(0).visit(this, state);
+		System.out.println(r.toString());
+		return new CellNil();
 	}
 
 	

@@ -38,4 +38,10 @@ public interface Visitor<S, T> {
     public T visitList(ExpList expList, S arg) throws VisitException;
 
     public T visitExpDouble(ExpDouble expDouble, S arg) throws VisitException;
+
+    public T visitExpTable(ExpTable expTable, S arg) throws VisitException;
+
+    public T visitExpPrint(PrintStatement expPrint, S state)throws VisitException;
+
+    public T visitExpPrintln(PrintlnStatement expPrintln, S state) throws VisitException;
 }

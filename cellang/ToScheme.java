@@ -146,4 +146,22 @@ public class ToScheme implements Visitor<Void, String> {
 		throw new UnsupportedOperationException("Unimplemented method 'visitExpDouble'");
 	}
 
+	@Override
+	public String visitExpTable(ExpTable expTable, Void arg) throws VisitException {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitExpTable'");
+	}
+
+	@Override
+	public String visitExpPrint(PrintStatement expPrint, Void state) throws VisitException {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitExpPrint'");
+	}
+
+	@Override
+	public String visitExpPrintln(PrintlnStatement expPrintln, Void state) throws VisitException {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitExpPrintln'");
+	}
+
 }

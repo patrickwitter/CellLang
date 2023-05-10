@@ -1,9 +1,9 @@
 public enum Cmp {
 	//FIXME THESE ERRORS ARE NOT HANDLED PROPERLY
     LT("<") {
-	public CellBoolean apply(CellLangType arg1, CellLangType arg2) {
+	public CellLangType apply(CellLangType arg1, CellLangType arg2) {
 	    try {
-			return (CellBoolean) arg1.lessThan(arg2) ;
+			return  arg1.lessThan(arg2) ;
 		} catch (TypeException e) {
 		
 			e.printStackTrace();
@@ -13,9 +13,9 @@ public enum Cmp {
     },
 
     LE("<=") {
-	public CellBoolean apply(CellLangType arg1, CellLangType arg2) {
+	public CellLangType apply(CellLangType arg1, CellLangType arg2) {
 	    try {
-			return (CellBoolean) arg1.lessThanOrEqual(arg2);
+			return  arg1.lessThanOrEqual(arg2);
 		} catch (TypeException e) {
 		
 			e.printStackTrace();
@@ -25,9 +25,9 @@ public enum Cmp {
     },
 
     EQ("=") {
-	public CellBoolean apply(CellLangType arg1, CellLangType arg2) {
+	public CellLangType apply(CellLangType arg1, CellLangType arg2) {
 	    try {
-			return (CellBoolean) arg1.areEqual(arg2);
+			return  arg1.areEqual(arg2);
 		} catch (TypeException e) {
 		
 			e.printStackTrace();
@@ -37,9 +37,9 @@ public enum Cmp {
     },
 
     NE("!=") {
-	public CellBoolean apply(CellLangType arg1, CellLangType arg2) {
+	public CellLangType apply(CellLangType arg1, CellLangType arg2) {
 	    try {
-			return  (CellBoolean) arg1.notEqual(arg2);
+			return   arg1.notEqual(arg2);
 		} catch (TypeException e) {
 		
 			e.printStackTrace();
@@ -49,9 +49,9 @@ public enum Cmp {
     },
 
     GT(">") {
-	public CellBoolean apply(CellLangType arg1, CellLangType arg2) {
+	public CellLangType apply(CellLangType arg1, CellLangType arg2) {
 	    try {
-			return (CellBoolean) arg1.greaterThan(arg2) ;
+			return  arg1.greaterThan(arg2) ;
 		} catch (TypeException e) {
 		
 			e.printStackTrace();
@@ -61,9 +61,9 @@ public enum Cmp {
     },
 
     GE(">=") {
-	public CellBoolean apply(CellLangType arg1, CellLangType arg2) {
+	public CellLangType apply(CellLangType arg1, CellLangType arg2) {
 	    try {
-			return (CellBoolean) arg1.greaterThanOrEqual(arg2);
+			return  arg1.greaterThanOrEqual(arg2);
 		} catch (TypeException e) {
 		
 			e.printStackTrace();
@@ -79,7 +79,7 @@ public enum Cmp {
 	symbol = sym;
     }
 
-    public abstract CellBoolean apply(CellLangType arg1, CellLangType arg2);
+    public abstract CellLangType apply(CellLangType arg1, CellLangType arg2);
 
     public String toString() {
 	return symbol;

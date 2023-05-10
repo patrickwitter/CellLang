@@ -6,35 +6,37 @@
 /** CUP generated class containing symbol constants. */
 public class sym {
   /* terminals */
-  public static final int MOD = 22;
-  public static final int ELSE = 16;
-  public static final int PLUS = 18;
-  public static final int INT = 24;
-  public static final int RBRACE = 11;
-  public static final int RPAREN = 8;
-  public static final int SEMI = 9;
-  public static final int END = 17;
+  public static final int MOD = 24;
+  public static final int ELSE = 18;
+  public static final int PLUS = 20;
+  public static final int INT = 26;
+  public static final int RBRACE = 13;
+  public static final int RPAREN = 10;
+  public static final int SEMI = 11;
+  public static final int END = 19;
   public static final int RBRAK = 4;
-  public static final int IF = 15;
-  public static final int LPAREN = 7;
-  public static final int COLON = 14;
-  public static final int LBRACE = 10;
+  public static final int IF = 17;
+  public static final int LPAREN = 9;
+  public static final int COLON = 16;
+  public static final int LBRACE = 12;
   public static final int TABLE = 5;
-  public static final int STRING = 27;
-  public static final int COMMA = 12;
-  public static final int CMP = 26;
+  public static final int STRING = 29;
+  public static final int COMMA = 14;
+  public static final int CMP = 28;
   public static final int EOF = 0;
+  public static final int PRINTLN = 7;
   public static final int LBRAK = 3;
-  public static final int DIV = 21;
-  public static final int MINUS = 19;
+  public static final int DIV = 23;
+  public static final int MINUS = 21;
+  public static final int PRINT = 6;
   public static final int error = 1;
   public static final int DOT = 2;
-  public static final int ASSIGN = 23;
-  public static final int MUL = 20;
-  public static final int EQU = 13;
-  public static final int VAR = 25;
-  public static final int DOUBLE = 28;
-  public static final int FUN = 6;
+  public static final int ASSIGN = 25;
+  public static final int MUL = 22;
+  public static final int EQU = 15;
+  public static final int VAR = 27;
+  public static final int DOUBLE = 30;
+  public static final int FUN = 8;
   public static final String[] terminalNames = new String[] {
   "EOF",
   "error",
@@ -42,6 +44,8 @@ public class sym {
   "LBRAK",
   "RBRAK",
   "TABLE",
+  "PRINT",
+  "PRINTLN",
   "FUN",
   "LPAREN",
   "RPAREN",

@@ -5,6 +5,7 @@ import java_cup.runtime.*;
 import lib3652.util.TokenException;
 
 // Jlex directives
+//TODO Add Booleans true / false
     
 %%
 
@@ -118,6 +119,8 @@ NOTE:
 <YYINITIAL> "if" {return new Symbol(sym.IF);}
 <YYINITIAL> "else" {return new Symbol(sym.ELSE);}
 <YYINITIAL> "end" {return new Symbol(sym.END);}
+<YYINITIAL> "print"     {return new Symbol(sym.PRINT);}
+<YYINITIAL> "println"   {return new Symbol(sym.PRINTLN);}
 
 // OTHER SYMBOLS
 <YYINITIAL> ":" {return new Symbol(sym.COLON);}

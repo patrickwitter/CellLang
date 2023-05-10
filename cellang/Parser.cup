@@ -41,10 +41,11 @@ scan with {:
 	  :};
 
 // 
-
 terminal DOT,LBRAK, RBRAK; 
+
 // CELLANG KEYWORDS 
 terminal TABLE;
+terminal PRINT, PRINTLN;
 
 /* Terminals (tokens returned by the scanner). */
 // keywords
@@ -86,11 +87,19 @@ non terminal ArrayList<Exp> argListE;
 
 non terminal ArrayList<Exp> list;
 non terminal ArrayList<Exp> listE;
-non terminal Exp listConstruct; 
+non terminal ExpList listConstruct; 
 non terminal Exp StmtIf; 
 non terminal Exp StmtIfElse;
 non terminal ExpLogic LogExp;
+non terminal ExpLogic LogStmt;
 
+//For table
+non terminal ExpTable tableExp;
+non terminal ArrayList<ExpList> listRows;
+
+// KEYWORDS
+
+non terminal Statement print;
 /* **** */
 
 non terminal Exp expression;
@@ -99,7 +108,7 @@ non terminal Exp factor;
 non terminal empty;
 
 /* Grammar rules */
-//BUG IFSTATEMENT SHOULD BE A STATEMENT 
+//BUG LOGICALBUG IFSTATEMENT SHOULD BE A STATEMENT 
 /// A program is a statement list 
 program ::= stmtList:s {: RESULT = new CellProgram(s); :};
 
@@ -112,10 +121,23 @@ stmtList ::= stmtList:lst stmt:s {:
 		RESULT = new StmtSequence(s);
 		:};
 
+/*
+	REUSE AS MANY RULES AS POSSIBLE INSTEAD OF CREATING NEW ONES 
+	TO AVOID CONFLICTS 
+*/
+
 /// A statement is a definition or expression or a function definition 
 /// All end with a semi colon check rules if you do not see one 
+/// Values that return nil or strictly expressions should be statments 
+
 stmt ::= definition:d {: RESULT = d; :} |
-	 expression:e {: RESULT = new Statement(e); :} SEMI | funDefn:fd {:RESULT = fd;:};
+	 expression:e {: RESULT = new Statement(e); :} SEMI | funDefn:fd {:RESULT = fd;:} | print:p {: RESULT = p; :} SEMI;
+
+// Print Statements 
+print ::= PRINT LPAREN expression:exp RPAREN
+	  	  {: RESULT = new PrintStatement(exp); :} |
+		  PRINTLN LPAREN expression:exp RPAREN
+	  	  {: RESULT = new PrintlnStatement(exp); :};
 
 /*If grammar*/
 StmtIf ::= IF LogExp:le COLON expression:consqt END {:RESULT = new ExpIf(le,consqt);:};
@@ -141,14 +163,15 @@ definition ::= VAR:v ASSIGN expression:e SEMI {:
 		   RESULT = new StmtDefinition(v, e);
 		:};
 
+LogStmt ::= LBRACE LogExp:le RBRACE {:RESULT = le;:};
 /// NOTE SEMI COLON IS AT STATEMENT LEVEL 
 /// Every expression ends with a semi colon 
 expression ::= 	expression:e PLUS term:t {:
 			RESULT = new ExpAdd(e, t); :} |
 		expression:e MINUS term:t {:
-			RESULT = new ExpSub(e, t); :} |
+			RESULT = new ExpSub(e, t); :} | 
 		term:t {: RESULT = t; :} | StmtIf:t {:RESULT = t;:} | StmtIfElse:e {:RESULT = e;:} |
-		listConstruct:l {: RESULT = l; :};
+		listConstruct:l {: RESULT = l; :} | tableExp:table {:RESULT = table;:} | LogStmt:e {:RESULT = e;:};
 
 /// This is the list 
 listConstruct ::= LBRAK listE:l RBRAK {: RESULT = new ExpList(l); :}; 
@@ -157,6 +180,19 @@ list ::= list:l COMMA expression:e {:l.add(e); RESULT = l;:} | expression:e {:Ar
 
 /// List of expressions inclusive of empty list 
 listE ::= list:l {:RESULT = l;:} | empty:e {:RESULT = new ArrayList<Exp>(); :};
+
+///----------------- TABLE Construction
+tableExp ::= TABLE LPAREN listConstruct:c RPAREN {:RESULT = new ExpTable(c);:} |
+             TABLE LPAREN listConstruct:c COMMA INT:numr RPAREN {:RESULT = new ExpTable(c,numr);:} |
+			 TABLE LPAREN listConstruct:c COMMA LBRAK listRows:r RBRAK RPAREN {:RESULT = new ExpTable(c,r);:};
+
+/// List of Rows
+/// A List of Row Entry (List)
+/// This produces a sequence of lists seperated by commas i.e [],[],[],
+listRows ::= listRows:row COMMA listConstruct:rowEntry {:row.add(rowEntry); RESULT = row;:} | listConstruct:rowEntry {:ArrayList<ExpList> ae = new ArrayList<ExpList>(); ae.add(rowEntry); RESULT = ae;:};  
+
+
+///-----------
 
 term ::= term:t MUL factor:f {:
 		RESULT = new ExpMul(t, f); :} |
@@ -170,7 +206,7 @@ factor ::= INT:ilit {: RESULT = new ExpLit(ilit); :} |
 		STRING:s {:RESULT = new ExpString(s); :} | 
 		DOUBLE:d {:RESULT = new ExpDouble(d); :} |
 		VAR:var {: RESULT = new ExpVar(var); :} |
-		LPAREN expression:e RPAREN {: RESULT = e; :}	| funCall:fc {:RESULT = fc;:};
+		LPAREN expression:e RPAREN {: RESULT = e; :}	| funCall:fc {:RESULT = fc;:} ;
 
 funCall ::= VAR:v LPAREN argListE:a RPAREN {:RESULT = new ExpFunCall(v,a);:};
 
@@ -179,5 +215,6 @@ argList ::= argList:al COMMA expression:e {:al.add(e); RESULT = al;:} | expressi
 
 /// List of arguement expressions inclusive of the empty arguement 
 argListE ::= argList:pl {:RESULT = pl;:} | empty:e {:RESULT = new ArrayList<Exp>(); :};
+
 
 empty ::= ;

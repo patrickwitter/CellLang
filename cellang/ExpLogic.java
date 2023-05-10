@@ -1,6 +1,6 @@
 
 
-public class ExpLogic extends ASTNode<ExpLogic> {
+public class ExpLogic extends Exp {
     Cmp operator;
     Exp left;
     Exp right;
