@@ -1,0 +1,47 @@
+x = table(["Col1","Col2"],[[1,2],[3,4]]);
+y = table(["Col1","Col2"],[[1,2],[3,4],[5,6]]);
+println("----TESTING ARITHMETIC OPERATIONS ON ASYMMETRIC TABLES ----");
+
+println("Original x");
+println(x);
+
+println("Original y");
+println(y);
+
+println("x*y");
+println(x * y);
+
+println("x+y");
+println(x + y);
+
+println("x/y");
+println(x / y);
+
+println("x-y");
+println(x - y);
+
+println("-------TESTING BOOLEAN OPERATIONS ON ASYMMETRIC TABLES-------");
+
+println("Original x");
+println(x);
+
+println("x>y");
+println({x > y});
+
+println("x<y");
+println({x < y});
+
+println("x>=y");
+println({x >= y});
+
+println("x<=y");
+println({x <= y});
+
+println("x!=y");
+println({x != y});
+
+println("x==y");
+println({x == y});
+
+
+

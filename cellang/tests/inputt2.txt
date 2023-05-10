@@ -1,0 +1,43 @@
+x = table(["Col1","Col2"],[[1,2],[3,4]]);
+println("----TESTING ARITHMETIC OPERATIONS ONSCALARS----");
+
+println("Original x");
+println(x);
+
+println("x*2");
+println(x * 2);
+
+println("x+2");
+println(x + 2);
+
+println("x/2");
+println(x / 2);
+
+println("x-2");
+println(x - 2);
+
+println("-------TESTING BOOLEAN OPERATIONS ONSCALARS-------");
+
+println("Original x");
+println(x);
+
+println("x>2");
+println({x > 2});
+
+println("x<2");
+println({x < 2});
+
+println("x>=2");
+println({x >= 2});
+
+println("x<=2");
+println({x <= 2});
+
+println("x!=2");
+println({x != 2});
+
+println("x==2");
+println({x == 2});
+
+
+

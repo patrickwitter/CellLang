@@ -1,0 +1,47 @@
+x = table(["Col1","Col2"],[[1,2],[3,4]]);
+y = table(["Col1","Col2"],[[1,2],[3,4]]);
+println("----TESTING ARITHMETIC OPERATIONS ON SYMMETRIC TABLES ----");
+
+println("Original x");
+println(x);
+
+println("Original y");
+println(y);
+
+println("x*y");
+println(x * y);
+
+println("x+y");
+println(x + y);
+
+println("x/y");
+println(x / y);
+
+println("x-y");
+println(x - y);
+
+println("-------TESTING BOOLEAN OPERATIONS ON SYMMETRIC TABLES-------");
+
+println("Original x");
+println(x);
+
+println("x>y");
+println({x > y});
+
+println("x<y");
+println({x < y});
+
+println("x>=y");
+println({x >= y});
+
+println("x<=y");
+println({x <= y});
+
+println("x!=y");
+println({x != y});
+
+println("x==y");
+println({x == y});
+
+
+
