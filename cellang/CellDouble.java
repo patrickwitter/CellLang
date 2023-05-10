@@ -4,7 +4,7 @@ public class CellDouble extends CellLangType<Double> {
 		super(value);
 	}
 
-
+	
     public CellLangType add(CellLangType v) throws TypeException
 	{
 		if(v instanceof CellInteger)
@@ -18,6 +18,7 @@ public class CellDouble extends CellLangType<Double> {
 			Double result = (Double)getValue() + (Double)v.getValue();
 			return new CellDouble(result);
 		}
+
 
 		throw new TypeException();
 	}
