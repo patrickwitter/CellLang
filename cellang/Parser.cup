@@ -67,6 +67,7 @@ terminal Cmp CMP;
 terminal String STRING;
 terminal Double DOUBLE;
 
+
 /* Non terminals */
 non terminal CellProgram program;
 non terminal StmtSequence stmtList;
@@ -99,6 +100,14 @@ non terminal ExpLogic LogStmt;
 non terminal ExpTable tableExp;
 non terminal ArrayList<ExpList> listRows;
 
+// Slice the table based on column e.g. table[ColA:ColC]
+non terminal ExpTable sliceTable;
+
+// Slice table based on column name e.g. table.Col1
+non terminal ExpTable selectCol; 
+
+// Slice table based on column condition e.g. table[Col1 > 10]
+non terminal ExpTable selectTableCond;
 // KEYWORDS
 
 non terminal Statement print;
@@ -110,7 +119,7 @@ non terminal Exp factor;
 non terminal empty;
 
 /* Grammar rules */
-//BUG LOGICALBUG IFSTATEMENT SHOULD BE A STATEMENT 
+
 /// A program is a statement list 
 program ::= stmtList:s {: RESULT = new CellProgram(s); :};
 
@@ -202,8 +211,23 @@ tableExp ::= TABLE LPAREN listConstruct:c RPAREN {:RESULT = new ExpTable(c);:} |
 /// This produces a sequence of lists seperated by commas i.e [],[],[],
 listRows ::= listRows:row COMMA listConstruct:rowEntry {:row.add(rowEntry); RESULT = row;:} | listConstruct:rowEntry {:ArrayList<ExpList> ae = new ArrayList<ExpList>(); ae.add(rowEntry); RESULT = ae;:};  
 
+///-----------END
 
-///-----------
+///----------------- TABLE OPERATIONS 
+
+// Slicing
+
+sliceTable ::= VAR:tableNm LBRAK VAR:Col1 COLON VAR:Col2 RBRAK {:RESULT = new ExpTable(new ExpList(new ArrayList<Exp>(Arrays.asList(new ExpString("Col1"),new ExpString("Col2")))));:};
+
+// Select subTable based on  Column 
+selectCol ::= VAR:tableNm DOT VAR:Col {:RESULT = new ExpTable(new ExpList(new ArrayList<Exp>(Arrays.asList(new ExpString("Col1"),new ExpString("Col2")))));:}; 
+
+// Select subTable based on  condition 
+// TODO Check if the left side of the expression is a VAR if not throw error
+selectTableCond ::= VAR:tableNm LBRAK LogExp:expr RBRAK {:RESULT = new ExpTable(new ExpList(new ArrayList<Exp>(Arrays.asList(new ExpString("Col1"),new ExpString("Col2")))));:};
+
+
+///----------------------END 
 
 term ::= term:t MUL factor:f {:
 		RESULT = new ExpMul(t, f); :} |
@@ -211,7 +235,8 @@ term ::= term:t MUL factor:f {:
 		RESULT = new ExpDiv(t, f); :} |
 	 term:t MOD factor:f {:
 		RESULT = new ExpMod(t, f); :} |
-	 factor:f {: RESULT = f; :} | ExpIf:t {:RESULT = t;:} | ExpIfElse:e {:RESULT = e;:};
+	 factor:f {: RESULT = f; :} | ExpIf:t {:RESULT = t;:} | ExpIfElse:e {:RESULT = e;:}
+	 | sliceTable:st {:RESULT = st;:} | selectCol:sc {:RESULT = sc;:} | selectTableCond:stc {:RESULT = stc;:} ;
 
 factor ::= INT:ilit {: RESULT = new ExpLit(ilit); :} |
 		STRING:s {:RESULT = new ExpString(s); :} | 
