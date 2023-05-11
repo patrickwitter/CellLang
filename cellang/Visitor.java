@@ -52,4 +52,8 @@ public interface Visitor<S, T> {
     public T visitExpSelectTableCol(ExpSelectTableCol expSelectTableCol, S arg) throws VisitException;
 
     public T visitExpSelectTableCond(ExpFilterTable expSelectTableCond, S arg) throws VisitException;
+
+    public T visitOutStatement(OutStatement outStatement, S state) throws VisitException;
+
+    public T visitCloseOutStatement(CloseOutStatement closeOutStatement, S state) throws VisitException;
 }

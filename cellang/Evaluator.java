@@ -4,10 +4,14 @@ import java.util.*;
 
 public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType > {
 	private BufferedReader reader;
+	private ExcelTest toExcel;
+	private Boolean outCalled = false;
+	private Boolean closeOutCalled = false;
 
 	public Evaluator()
 	{
 		reader = new BufferedReader(new InputStreamReader(System.in));
+		toExcel = new ExcelTest();
 	}
 	
 	public Environment<CellLangType> getDefaultState()
@@ -41,7 +45,8 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 			s = (Statement) iter.next();
 			result = s.visit(this, env);
 		}
-		
+		//Close all workbooks once it is done
+		toExcel.closeAll();
 		return result;
     }
 
@@ -218,7 +223,7 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 	public CellLangType visitExpTable(ExpTable expTable, Environment<CellLangType> arg) throws VisitException {
 		CellList rows = new CellList();
 		CellList columns = new CellList();
-
+		CellTable result;
 		for (Exp c: expTable.getCol().getValue()) {
 			CellLangType colEntry = c.visit(this, arg);
 
@@ -229,9 +234,11 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 		switch(expTable.getName())
 		{
 			case("no rows"):
-							 return new CellTable(columns);
+							 result = new  CellTable(columns);
+							 break;
 			case("num rows"):
-							 return new CellTable(columns, expTable.getNumRows());
+							 result = new CellTable(columns, expTable.getNumRows());
+							 break;
 			case("rows specified"):
 								// System.out.println("ROW");
 								// System.out.println(expTable.getRows());
@@ -248,10 +255,20 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 								 }
 								 rows.add(rowEntry);
 							}
-							 return new CellTable(columns, rows);
+							 result = new CellTable(columns, rows);
+							 break;
 			default:
 						throw new VisitException("Illegal initialization of Table");	
+
+			
 		}
+
+		if(outCalled)
+		{
+			toExcel.CreateStaticTable(result);
+		}
+		return result;
+
 	}
 
 	@Override
@@ -357,6 +374,36 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 			throw new VisitException("Left side of condition must be a column name");
 		}
 	
+	}
+
+	@Override
+	public CellLangType visitOutStatement(OutStatement outStatement, Environment<CellLangType> state)
+			throws VisitException {
+				if(outCalled)
+				{
+					throw new VisitException("You must put a closeOut statment before writing out again");
+				}
+				outCalled = true;
+				toExcel.createWorkbook( outStatement.getWorkbookPath(), outStatement.getSheetName());
+				return new CellNil();
+	}
+
+	@Override
+	public CellLangType visitCloseOutStatement(CloseOutStatement closeOutStatement, Environment<CellLangType> state) throws VisitException {
+		if(outCalled && !closeOutCalled)
+		{
+			outCalled = false;
+			closeOutCalled = true;
+		}
+		else if (closeOutCalled)
+		{
+			throw new VisitException("'closeOut' called previously.You must put an 'out' statment before writing closeOut again");
+		}
+		else
+		{
+			throw new VisitException("You must put an 'out' statment before writing closeOut");
+		}
+		return new CellNil();
 	}
 
 	

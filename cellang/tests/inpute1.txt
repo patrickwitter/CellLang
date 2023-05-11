@@ -1,0 +1,4 @@
+println("----WRITING STATIC TABLE TO EXCEL");
+out("C:\Users\Pwitt\Documents\Capstone\output.xlsx","TestSheet");
+x = table(["Col1","Col2"],[[1,2],[3,4]]);
+closeOut();

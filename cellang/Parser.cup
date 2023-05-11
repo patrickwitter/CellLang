@@ -43,10 +43,11 @@ scan with {:
 // 
 terminal DOT,LBRAK, RBRAK; 
 
-// CELLANG KEYWORDS 
+// ------- CELLANG KEYWORDS 
 terminal TABLE;
 terminal PRINT, PRINTLN;
 terminal OUT;
+terminal CLOSEOUT;
 
 /* Terminals (tokens returned by the scanner). */
 // keywords
@@ -109,9 +110,13 @@ non terminal ExpSelectTableCol selectCol;
 
 // Slice table based on column condition e.g. table[Col1 > 10]
 non terminal ExpFilterTable filterTable;
-// KEYWORDS
 
+// ----------------KEYWORDS
 non terminal Statement print;
+
+non terminal Statement outStmt;
+
+non terminal Statement closeOutStmt;
 /* **** */
 
 non terminal Exp expression;
@@ -144,13 +149,19 @@ stmtList ::= stmtList:lst stmt:s {:
 
 stmt ::= definition:d {: RESULT = d; :} |
 	 expression:e {: RESULT = new Statement(e); :} SEMI | funDefn:fd {:RESULT = fd;:} | print:p {: RESULT = p; :} SEMI |
-	 ifStmt:i {:RESULT = i;:} | ifElseStmt:i {:RESULT = i;:};
+	 ifStmt:i {:RESULT = i;:} | ifElseStmt:i {:RESULT = i;:} | outStmt:o {:RESULT =o;:} | closeOutStmt:o {:RESULT =o;:};
 
 // Print Statements 
 print ::= PRINT LPAREN expression:exp RPAREN
 	  	  {: RESULT = new PrintStatement(exp); :} |
 		  PRINTLN LPAREN expression:exp RPAREN
 	  	  {: RESULT = new PrintlnStatement(exp); :};
+
+// Out Statement 
+outStmt ::= OUT LPAREN STRING:wbrkPath COMMA STRING:shtNm RPAREN SEMI {:RESULT = new OutStatement(wbrkPath,shtNm);:};
+
+// CloseOutStatement
+closeOutStmt ::= CLOSEOUT LPAREN RPAREN SEMI {:RESULT = new CloseOutStatement();:};
 
 /*If grammar*/
 ExpIf ::= IF LogExp:le COLON expression:consqt END {:RESULT = new ExpIf(le,consqt);:};

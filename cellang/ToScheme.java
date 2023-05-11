@@ -188,4 +188,16 @@ public class ToScheme implements Visitor<Void, String> {
 		throw new UnsupportedOperationException("Unimplemented method 'visitExpSelectTableCond'");
 	}
 
+	@Override
+	public String visitOutStatement(OutStatement outStatement, Void state) throws VisitException {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitOutStatement'");
+	}
+
+	@Override
+	public String visitCloseOutStatement(CloseOutStatement closeOutStatement, Void state) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitCloseOutStatement'");
+	}
+
 }
