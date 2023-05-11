@@ -46,6 +46,7 @@ terminal DOT,LBRAK, RBRAK;
 // CELLANG KEYWORDS 
 terminal TABLE;
 terminal PRINT, PRINTLN;
+terminal OUT;
 
 /* Terminals (tokens returned by the scanner). */
 // keywords
