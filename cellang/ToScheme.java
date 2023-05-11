@@ -170,4 +170,22 @@ public class ToScheme implements Visitor<Void, String> {
 		throw new UnsupportedOperationException("Unimplemented method 'visitIfStatement'");
 	}
 
+	@Override
+	public String visitExpSliceTable(ExpSliceTable expSliceTable, Void arg) throws VisitException {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitExpSliceTable'");
+	}
+
+	@Override
+	public String visitExpSelectTableCol(ExpSelectTableCol expSelectTableCol, Void arg) throws VisitException {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitExpSelectTableCol'");
+	}
+
+	@Override
+	public String visitExpSelectTableCond(ExpFilterTable expSelectTableCond, Void arg) throws VisitException {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitExpSelectTableCond'");
+	}
+
 }

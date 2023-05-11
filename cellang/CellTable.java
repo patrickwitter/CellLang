@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.print.event.PrintEvent;
 
 public class CellTable extends CellLangType<List<CellLangType>>{
 
@@ -1085,12 +1084,12 @@ public class CellTable extends CellLangType<List<CellLangType>>{
 
         // Check if the specified column names are found
         if (col1Index == -1 || col2Index == -1) {
-            throw new IllegalArgumentException("One or both of the specified column names not found.");
+            throw new TypeException("One or both of the specified column names not found.");
         }
 
         // Check if the specified column names are in the correct order
         if (col1Index > col2Index) {
-            throw new IllegalArgumentException("The first column name should come before the second column name in the table.");
+            throw new TypeException("The first column name should come before the second column name in the table.");
         }
 
         // Create a new list of columns for the sliced table
@@ -1106,7 +1105,7 @@ public class CellTable extends CellLangType<List<CellLangType>>{
         return new CellTable(slicedColumns, slicedRows);
     }
 
-    public CellList getColumn(String colName) throws TypeException {
+    public CellTable getColumn(String colName) throws TypeException {
         int colIndex = -1;
 
         // Find the index of the specified column name
@@ -1131,10 +1130,19 @@ public class CellTable extends CellLangType<List<CellLangType>>{
 
         // Add the values from the specified column
         for (CellLangType row : rows.getValue()) {
-            columnValues.add(((CellList) row).getValue().get(colIndex));
+            ArrayList<CellLangType> r = new ArrayList<CellLangType>();
+            r.add(((CellList) row).getValue().get(colIndex));
+            CellList rowE = new CellList(r );
+            columnValues.add(rowE);
         }
+        ArrayList<CellLangType> c = new ArrayList<CellLangType>();
 
-        return columnValues;
+        c.add(columnValues.getValue().get(0));
+        CellList column = new CellList(c );
+        CellList row = new CellList(new CellList(columnValues.getValue().subList(1, columnValues.getValue().size())).getValue());
+        // System.out.println("FROM SELECT COLOUMN ROW");
+        // System.out.println(row);
+        return new CellTable(column,row);
     }
 
 
@@ -1220,4 +1228,32 @@ public class CellTable extends CellLangType<List<CellLangType>>{
 
         return String.join("\n", result);
     }
+
+
+    public CellTable filterTable(CellTable subTable) throws TypeException {
+        // Create a new empty result table with the same columns as this table
+        CellTable resultTable = new CellTable(this.columns);
+    
+        // Iterate over rows of this table
+        for (CellLangType row : this.rows.getValue()) {
+            // Check if the subTable contains this row in its first column
+            for (CellLangType subTableRow : subTable.rows.getValue()) {
+                if (((CellList) row).getValue().get(0).equals(((CellList) subTableRow).getValue().get(0))) {
+                    // If it does, add the row to the result table
+                    resultTable.rows.getValue().add(row);
+                    break;
+                }
+            }
+        }
+    
+        return resultTable;
+    }
+
+    
+    
+    
+    
+    
+    
+    
 }

@@ -2,6 +2,9 @@ println("--------TABLE OPERATIONS-----------");
 
 y = table(["Col1","Col2","Col3","Col4"],[[1,2,3,4],[3,4,5,6],[5,6,7,8]]);
 
+println("--ORIGINAL TABLE--");
+println(y);
+
 println("-----SLICING----");
 println("y[Col2:Col4]");
 
@@ -12,5 +15,5 @@ println("y.Col1");
 println(y.Col1);
 
 println("----FILTERING---");
-println("y[Col1>5]");
-println(y[Col1>5]);
+println("y[Col1>3]");
+println(y[Col1>3]);

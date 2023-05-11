@@ -46,4 +46,10 @@ public interface Visitor<S, T> {
     public T visitExpPrintln(PrintlnStatement expPrintln, S state) throws VisitException;
 
     public T visitIfStatement(IfStatement ifStatement, S state) throws VisitException;
+
+    public T visitExpSliceTable(ExpSliceTable expSliceTable, S arg) throws VisitException;
+
+    public T visitExpSelectTableCol(ExpSelectTableCol expSelectTableCol, S arg) throws VisitException;
+
+    public T visitExpSelectTableCond(ExpFilterTable expSelectTableCond, S arg) throws VisitException;
 }

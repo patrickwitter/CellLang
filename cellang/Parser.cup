@@ -101,13 +101,13 @@ non terminal ExpTable tableExp;
 non terminal ArrayList<ExpList> listRows;
 
 // Slice the table based on column e.g. table[ColA:ColC]
-non terminal ExpTable sliceTable;
+non terminal ExpSliceTable sliceTable;
 
 // Slice table based on column name e.g. table.Col1
-non terminal ExpTable selectCol; 
+non terminal ExpSelectTableCol selectCol; 
 
 // Slice table based on column condition e.g. table[Col1 > 10]
-non terminal ExpTable selectTableCond;
+non terminal ExpFilterTable filterTable;
 // KEYWORDS
 
 non terminal Statement print;
@@ -215,16 +215,16 @@ listRows ::= listRows:row COMMA listConstruct:rowEntry {:row.add(rowEntry); RESU
 
 ///----------------- TABLE OPERATIONS 
 
-// Slicing
+// Slicing e..g table[Col1:Col2]
 
-sliceTable ::= VAR:tableNm LBRAK VAR:Col1 COLON VAR:Col2 RBRAK {:RESULT = new ExpTable(new ExpList(new ArrayList<Exp>(Arrays.asList(new ExpString("Col1"),new ExpString("Col2")))));:};
+sliceTable ::= VAR:tableNm LBRAK VAR:Col1 COLON VAR:Col2 RBRAK {:RESULT = new ExpSliceTable(new ExpVar(tableNm),Col1,Col2);:};
 
-// Select subTable based on  Column 
-selectCol ::= VAR:tableNm DOT VAR:Col {:RESULT = new ExpTable(new ExpList(new ArrayList<Exp>(Arrays.asList(new ExpString("Col1"),new ExpString("Col2")))));:}; 
+// Select sub-Table based on  Column e.g. table.Col1
+selectCol ::= VAR:tableNm DOT VAR:col {:RESULT = new ExpSelectTableCol(new ExpVar(tableNm),col);:}; 
 
-// Select subTable based on  condition 
+// Select subTable based on  condition e.g. table[Col1>3]
 // TODO Check if the left side of the expression is a VAR if not throw error
-selectTableCond ::= VAR:tableNm LBRAK LogExp:expr RBRAK {:RESULT = new ExpTable(new ExpList(new ArrayList<Exp>(Arrays.asList(new ExpString("Col1"),new ExpString("Col2")))));:};
+filterTable ::= VAR:tableNm LBRAK LogExp:expr RBRAK {:RESULT = new ExpFilterTable(new ExpVar(tableNm),expr) ;:};
 
 
 ///----------------------END 
@@ -236,7 +236,7 @@ term ::= term:t MUL factor:f {:
 	 term:t MOD factor:f {:
 		RESULT = new ExpMod(t, f); :} |
 	 factor:f {: RESULT = f; :} | ExpIf:t {:RESULT = t;:} | ExpIfElse:e {:RESULT = e;:}
-	 | sliceTable:st {:RESULT = st;:} | selectCol:sc {:RESULT = sc;:} | selectTableCond:stc {:RESULT = stc;:} ;
+	 | sliceTable:st {:RESULT = st;:} | selectCol:sc {:RESULT = sc;:} | filterTable:stc {:RESULT = stc;:} ;
 
 factor ::= INT:ilit {: RESULT = new ExpLit(ilit); :} |
 		STRING:s {:RESULT = new ExpString(s); :} | 

@@ -268,10 +268,95 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 		return new CellNil();
 	}
 
+	//TODO IMPLEMENT
 	@Override
 	public CellLangType visitIfStatement(IfStatement ifStatement, Environment<CellLangType> state)
 			throws VisitException {
 		return new CellInteger(999);
+	}
+
+	
+	@Override
+	public CellLangType visitExpSliceTable(ExpSliceTable expSliceTable, Environment<CellLangType> arg)
+			throws VisitException {
+		
+				CellLangType t = expSliceTable.getTableName().visit(this, arg);
+
+				if(t instanceof CellTable)
+				{
+					CellTable table = (CellTable)t;
+
+					try {
+						return table.slice(expSliceTable.getColumn1(), expSliceTable.getColumn2());
+						
+					} catch (TypeException e) {
+						throw new VisitException(e.getMessage());
+					}
+				}
+				else {
+					throw new VisitException("Slicing Operator only works for tables");
+				}
+	}
+
+	@Override
+	public CellLangType visitExpSelectTableCol(ExpSelectTableCol expSelectTableCol, Environment<CellLangType> arg)
+			throws VisitException {
+
+				CellLangType t = expSelectTableCol.getTableName().visit(this, arg);
+
+				if(t instanceof CellTable)
+				{
+					CellTable table = (CellTable)t;
+
+					try {
+						return table.getColumn(expSelectTableCol.getColumn1());
+						
+					} catch (TypeException e) {
+						throw new VisitException(e.getMessage());
+					}
+				}
+				else {
+					throw new VisitException("Slicing Operator only works for tables");
+				}
+		
+	}
+
+	//TODO Implement
+	@Override
+	public CellLangType visitExpSelectTableCond(ExpFilterTable expSelectTableCond, Environment<CellLangType> arg)
+			throws VisitException {
+
+		//Check if the left side of the logical expression is a variable representing the column name 
+		
+		if (expSelectTableCond.getExpLogic().left instanceof ExpVar)
+		{
+			// Check if the table variable name coresponds to a table
+
+			if(expSelectTableCond.getTable().visit(this, arg) instanceof CellTable)
+			{
+
+				// Get the column from the table
+				ExpSelectTableCol getcol = new ExpSelectTableCol(expSelectTableCond.getTable(), ((ExpVar)expSelectTableCond.getExpLogic().left).var); 
+				CellTable column = (CellTable)getcol.visit(this, arg);
+
+				// Apply the condition on the column 
+				CellTable subTable = (CellTable)expSelectTableCond.getExpLogic().operator.apply(column, expSelectTableCond.getExpLogic().right.visit(this, arg));
+				
+				
+				// Return table that has
+				CellTable original =  (CellTable)expSelectTableCond.getTable().visit(this, arg);
+				
+				return original.filterTable(subTable);
+			}
+			else 
+			{
+				throw new VisitException("Conditional Slicing can only be called on table names");
+			}
+		}
+		else {
+			throw new VisitException("Left side of condition must be a column name");
+		}
+	
 	}
 
 	
