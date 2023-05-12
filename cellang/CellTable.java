@@ -1085,13 +1085,7 @@ public class CellTable extends CellLangType<List<CellLangType>>{
 
     public void addRow(CellList r)
     {   
-        //TODO HANDLE BETTER 
-        try {
-            rows.add(r);
-        } catch (TypeException e) {
-           
-            e.printStackTrace();
-        }
+        rows.add(r);
     }
 
     public CellTable slice(String colName1, String colName2) throws TypeException {

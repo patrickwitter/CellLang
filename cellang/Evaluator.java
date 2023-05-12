@@ -114,10 +114,19 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 		// Check if atleast one of the expressions is an ExpTable 
 		//BUG For now both have to be tables will modify ExcelTest to fix
 
-		if(val1 instanceof CellTable && val2 instanceof CellTable)
+		if(val1 instanceof CellTable || val2 instanceof CellTable)
 		{
+			if(val1 instanceof CellTable)
+			{
+				toExcel.addTables((CellTable) val1 , val2);
+			}
+
+			else
+			{
+				toExcel.addTables((CellTable) val2 , val1);
+			}
 			// System.out.println("Adding Tables to Excel");
-			toExcel.addTables((CellTable) val1 , (CellTable) val2);
+			
 		}
 	}
 	return val1.add( val2);

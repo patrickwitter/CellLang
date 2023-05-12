@@ -30,7 +30,7 @@ public class CellList extends CellLangType<List<CellLangType>>{
     }
 
     @Override
-    public CellLangType add(CellLangType v) throws TypeException {
+    public CellLangType add(CellLangType v)  {
         getValue().add(v);
         return new CellNil();
     }
