@@ -1,4 +1,6 @@
 println("----WRITING STATIC TABLE TO EXCEL");
-out("C:\Users\Pwitt\Documents\Capstone\output.xlsx","TestSheet");
+out("C:\\Users\\Pwitt\\Documents\\Capstone\\output.xlsx","TestSheet");
 x = table(["Col1","Col2"],[[1,2],[3,4]]);
+y = table(["Col1Y","Col2Y"],[[5,6],[7,8]]);
+z = table(["Col1YY","Col2YY"],[[9,10],[11,12]]);
 closeOut();

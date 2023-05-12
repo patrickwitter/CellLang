@@ -10,6 +10,8 @@ public class CellTable extends CellLangType<List<CellLangType>>{
     // Specifically a list of lists
     private CellList rows;
 
+    private static int tableId = 0; 
+
     /// All CellTables must have a list of columns
     /// By default one empty row is created 
     /// E.G. table(["COL1,COL2"])
@@ -21,6 +23,7 @@ public class CellTable extends CellLangType<List<CellLangType>>{
 
         this.columns = columns;
         rows = new CellList();
+        tableId++;
         /// TABLE OF THE FORM [ ["Col1", "Col2"], [] ]
     }
 
@@ -41,6 +44,7 @@ public class CellTable extends CellLangType<List<CellLangType>>{
 
         this.columns = columns;
         this.rows = new CellList( super.getValue().subList(1, super.getValue().size()));
+        tableId++;
          /// []*0* - The 0th index
          /// TABLE OF THE FORM [ ["Col1", "Col2"], []*0*,.......[]*numrows-1* ]
     }
@@ -58,6 +62,7 @@ public class CellTable extends CellLangType<List<CellLangType>>{
         }});
         this.columns = columns;
         this.rows = new CellList( super.getValue().subList(1, super.getValue().size()));
+        tableId++;
         /// TABLE OF THE FORM [ ["Col1", "Col2"], [row1],[row2] ]
     }
 
@@ -167,7 +172,7 @@ public class CellTable extends CellLangType<List<CellLangType>>{
     }
 
     @Override
-    public CellLangType sub(CellLangType v) throws TypeException {
+    public CellTable sub(CellLangType v) throws TypeException {
         /// If it is another table we add each element of the table 
         /// If the tables are not the same dimensions we use the Excel Rules 
         /// IF  an "empty cell" is an added to an integer 0 will be the value 
@@ -266,7 +271,7 @@ public class CellTable extends CellLangType<List<CellLangType>>{
     }
 
     @Override
-    public CellLangType mul(CellLangType v) throws TypeException {
+    public CellTable mul(CellLangType v) throws TypeException {
         /// If it is another table we add each element of the table 
         /// If the tables are not the same dimensions we use the Excel Rules 
         /// IF  an "empty cell" is an added to an integer 0 will be the value 
@@ -367,7 +372,7 @@ public class CellTable extends CellLangType<List<CellLangType>>{
     }
 
     @Override
-    public CellLangType div(CellLangType v) throws TypeException {
+    public CellTable div(CellLangType v) throws TypeException {
         /// If it is another table we add each element of the table 
         /// If the tables are not the same dimensions we use the Excel Rules 
         /// IF  an "empty cell" is an added to an integer 0 will be the value 
@@ -663,7 +668,7 @@ public class CellTable extends CellLangType<List<CellLangType>>{
         throw new TypeException();
 	}
 
-	public CellLangType greaterThanOrEqual(CellLangType v) throws TypeException
+	public CellTable greaterThanOrEqual(CellLangType v) throws TypeException
 	{   
                 /// If it is another table we compare each element of the table 
         /// If the tables are not the same dimensions we use the Excel Rules 
@@ -860,7 +865,7 @@ public class CellTable extends CellLangType<List<CellLangType>>{
         throw new TypeException();
 	}
 
-	public CellLangType notEqual(CellLangType v) throws TypeException
+	public CellTable notEqual(CellLangType v) throws TypeException
 	{
                 /// If it is another table we compare each element of the table 
         /// If the tables are not the same dimensions we use the Excel Rules 
@@ -958,7 +963,7 @@ public class CellTable extends CellLangType<List<CellLangType>>{
         throw new TypeException();
 	}
 	
-	public CellLangType areEqual(CellLangType v) throws TypeException
+	public CellTable areEqual(CellLangType v) throws TypeException
 	{
         /// If it is another table we compare each element of the table 
         /// If the tables are not the same dimensions we use the Excel Rules 
@@ -1249,7 +1254,10 @@ public class CellTable extends CellLangType<List<CellLangType>>{
         return resultTable;
     }
 
-    
+    public int getId()
+    {
+        return tableId;
+    }
     
     
     
