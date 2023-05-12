@@ -107,6 +107,19 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 	CellLangType val1, val2;
 	val1 = exp.getExpL().visit(this, env);
 	val2 = exp.getExpR().visit(this, env);
+
+	if(outCalled)
+	{
+		// System.out.println("Out ADD");
+		// Check if atleast one of the expressions is an ExpTable 
+		//BUG For now both have to be tables will modify ExcelTest to fix
+
+		if(val1 instanceof CellTable && val2 instanceof CellTable)
+		{
+			// System.out.println("Adding Tables to Excel");
+			toExcel.addTables((CellTable) val1 , (CellTable) val2);
+		}
+	}
 	return val1.add( val2);
     }
 

@@ -35,5 +35,11 @@ public class CellList extends CellLangType<List<CellLangType>>{
         return new CellNil();
     }
 
+   
+    public CellLangType addAll(CellList v){
+        getValue().addAll(v.getValue());
+        return new CellNil();
+    }
+
     
 }

@@ -121,6 +121,7 @@ NOTE:
 <YYINITIAL> "if" {return new Symbol(sym.IF);}
 <YYINITIAL> "else" {return new Symbol(sym.ELSE);}
 <YYINITIAL> "end" {return new Symbol(sym.END);}
+//TODO MOVE TO LANG KEYWORDS
 <YYINITIAL> "print"     {return new Symbol(sym.PRINT);}
 <YYINITIAL> "println"   {return new Symbol(sym.PRINTLN);}
 
@@ -128,7 +129,7 @@ NOTE:
 <YYINITIAL> ":" {return new Symbol(sym.COLON);}
 <YYINITIAL> "." {return new Symbol(sym.DOT);}
 
-/// LOGICAL Symbols 
+/// RELATIONAL Symbols 
 <YYINITIAL>	"=="	{return new Symbol(sym.EQU);}
 <YYINITIAL> "<" {return new Symbol(sym.CMP,Cmp.LT);}
 <YYINITIAL> "<=" {return new Symbol(sym.CMP,Cmp.LE);}

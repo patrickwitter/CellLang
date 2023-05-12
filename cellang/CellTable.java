@@ -10,7 +10,9 @@ public class CellTable extends CellLangType<List<CellLangType>>{
     // Specifically a list of lists
     private CellList rows;
 
-    private static int tableId = 0; 
+    private static int tableId = 0;
+    
+    private int uniqueTableId;
 
     /// All CellTables must have a list of columns
     /// By default one empty row is created 
@@ -23,7 +25,7 @@ public class CellTable extends CellLangType<List<CellLangType>>{
 
         this.columns = columns;
         rows = new CellList();
-        tableId++;
+       uniqueTableId =  tableId++;
         /// TABLE OF THE FORM [ ["Col1", "Col2"], [] ]
     }
 
@@ -44,10 +46,12 @@ public class CellTable extends CellLangType<List<CellLangType>>{
 
         this.columns = columns;
         this.rows = new CellList( super.getValue().subList(1, super.getValue().size()));
-        tableId++;
+        uniqueTableId =  tableId++;
          /// []*0* - The 0th index
          /// TABLE OF THE FORM [ ["Col1", "Col2"], []*0*,.......[]*numrows-1* ]
     }
+
+
     /// Creates a table with the rows specified 
     /// The table is a list of lists 
     /// with the first element being the column and the rest the rows
@@ -62,7 +66,7 @@ public class CellTable extends CellLangType<List<CellLangType>>{
         }});
         this.columns = columns;
         this.rows = new CellList( super.getValue().subList(1, super.getValue().size()));
-        tableId++;
+        uniqueTableId =  tableId++;
         /// TABLE OF THE FORM [ ["Col1", "Col2"], [row1],[row2] ]
     }
 
@@ -1072,6 +1076,24 @@ public class CellTable extends CellLangType<List<CellLangType>>{
         return rows;
     }
 
+    public void addColumn(CellList c)
+    {   
+        
+            columns.addAll(c);
+        
+    }
+
+    public void addRow(CellList r)
+    {   
+        //TODO HANDLE BETTER 
+        try {
+            rows.add(r);
+        } catch (TypeException e) {
+           
+            e.printStackTrace();
+        }
+    }
+
     public CellTable slice(String colName1, String colName2) throws TypeException {
         int col1Index = -1;
         int col2Index = -1;
@@ -1256,7 +1278,7 @@ public class CellTable extends CellLangType<List<CellLangType>>{
 
     public int getId()
     {
-        return tableId;
+        return uniqueTableId;
     }
     
     

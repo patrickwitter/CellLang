@@ -1,0 +1,7 @@
+println("---- ARITHMETIC ASYMMETRIC TABLE TO EXCEL");
+out("C:\\Users\\Pwitt\\Documents\\Capstone\\outpute3.xlsx","TestSheet");
+x = table(["Col1","Col2"],[[1,2],[3,4]]);
+y = table(["Col1Y","Col2Y","ColZ"],[[5,6,100],[7,8,100]]);
+z = x+y;
+
+closeOut();
