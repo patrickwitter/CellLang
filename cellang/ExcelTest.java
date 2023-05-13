@@ -515,7 +515,8 @@ public class ExcelTest {
                         constantAddress = new CellReference(cellConstant.getRowIndex(), cellConstant.getColumnIndex()).formatAsString();
                     }
 
-                    String formula = "SUM("+cellT1Address+","+"$"+constantAddress+")";
+                    System.out.println("CONSTANT ADDRESS "+constantAddress);
+                    String formula = "SUM("+cellT1Address+","+"$"+constantAddress.charAt(0)+"$"+constantAddress.charAt(1)+")";
                     rowEntry.add(new CellString(formula));
                 }
 
@@ -564,6 +565,8 @@ public class ExcelTest {
         toMappingsFile();
         System.out.println("Mappings file ran");
     }
+
+
     /**
      * @pre TableId must be unique 
      * @param tableId The Id of the table to be added 
@@ -767,14 +770,14 @@ public List<Pair<String, CellTable>> readTablesFromMappingsFile(String mappingFi
         String workbookPath = "";
         String sheetName = "";
 
-        Workbook workbook = null;
+        Workbook workbookToRead = null;
         Sheet sheet = null;
 
         while ((line = reader.readLine()) != null) {
             if (line.startsWith("from")) {
                 // Close previous workbook if it was opened
-                if (workbook != null) {
-                    workbook.close();
+                if (workbookToRead != null) {
+                    workbookToRead.close();
                 }
 
                 // Parse workbook path and sheet name
@@ -785,8 +788,8 @@ public List<Pair<String, CellTable>> readTablesFromMappingsFile(String mappingFi
                 sheetName = parts[1].trim();
 
                 // Open workbook and get sheet
-                workbook = WorkbookFactory.create(new File(workbookPath));
-                sheet = workbook.getSheet(sheetName);
+                workbookToRead = WorkbookFactory.create(new File(workbookPath));
+                sheet = workbookToRead.getSheet(sheetName);
             } else if (line.startsWith("@")) {
                 // Parse table ID and cell range
                 int equalsIndex = line.indexOf('=');
@@ -810,7 +813,7 @@ public List<Pair<String, CellTable>> readTablesFromMappingsFile(String mappingFi
                 ArrayList<Integer> endCoordinate = convertFromExcelNotation(cellReferences[1]);
                 System.out.println("CELL COORD FOR ID "+ tableId +" "+startCoordinate.toString() + " " + endCoordinate.toString());
                 // Read table data from sheet
-                CellTable table = readTableFromSheet(sheet, startCoordinate, endCoordinate);
+                CellTable table = readTableFromSheet(sheet, startCoordinate, endCoordinate,workbookToRead);
                 try {
                     // The tag should be equal the table id 
                     table.setTableTag(tableId);
@@ -824,8 +827,8 @@ public List<Pair<String, CellTable>> readTablesFromMappingsFile(String mappingFi
         }
 
         // Close last workbook
-        if (workbook != null) {
-            workbook.close();
+        if (workbookToRead != null) {
+            workbookToRead.close();
         }
     } catch (IOException e) {
         e.printStackTrace();
@@ -834,7 +837,7 @@ public List<Pair<String, CellTable>> readTablesFromMappingsFile(String mappingFi
     return tables;
 }
 
-private CellTable readTableFromSheet(Sheet sheet, ArrayList<Integer> startCoordinate, ArrayList<Integer> endCoordinate) {
+private CellTable readTableFromSheet(Sheet sheet, ArrayList<Integer> startCoordinate, ArrayList<Integer> endCoordinate, Workbook workbookToRead) {
     CellList columns = new CellList();
     CellList rows = new CellList();
 
@@ -853,6 +856,7 @@ private CellTable readTableFromSheet(Sheet sheet, ArrayList<Integer> startCoordi
                 tableCell = new CellString(cell.getStringCellValue());
                 columns.add(tableCell);
             } else {
+                //TODO 
                 switch (cell.getCellType()) {
                     case BOOLEAN:
                         tableCell = new CellBoolean(cell.getBooleanCellValue());
@@ -861,10 +865,26 @@ private CellTable readTableFromSheet(Sheet sheet, ArrayList<Integer> startCoordi
                         tableCell = new CellString(cell.getStringCellValue());
                         break;
                     case NUMERIC:
-                            double numericValue = cell.getNumericCellValue();
-                            //System.out.println("CellValue " + numericValue);
-                            tableCell = numericValue == (int) numericValue ? new CellInteger((int) numericValue) : new CellDouble(numericValue);
-                        
+                        double numericValue = cell.getNumericCellValue();
+                        tableCell = numericValue == (int) numericValue ? new CellInteger((int) numericValue) : new CellDouble(numericValue);
+                        break;
+                    case FORMULA:
+                        FormulaEvaluator evaluator = workbookToRead.getCreationHelper().createFormulaEvaluator();
+                        CellValue cellValue = evaluator.evaluate(cell);
+                        switch (cellValue.getCellType()) {
+                            case BOOLEAN:
+                                tableCell = new CellBoolean(cellValue.getBooleanValue());
+                                break;
+                            case STRING:
+                                tableCell = new CellString(cellValue.getStringValue());
+                                break;
+                            case NUMERIC:
+                                double formulaNumericValue = cellValue.getNumberValue();
+                                tableCell = formulaNumericValue == (int) formulaNumericValue ? new CellInteger((int) formulaNumericValue) : new CellDouble(formulaNumericValue);
+                                break;
+                            default:
+                                throw new IllegalArgumentException("Unsupported cell value type: " + cellValue.getCellType());
+                        }
                         break;
                     default:
                         throw new IllegalArgumentException("Unsupported cell type: " + cell.getCellType());

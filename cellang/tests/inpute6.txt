@@ -1,0 +1,12 @@
+println("----TESTING IMPORT FOR FORMULA LOADED TABLES");
+out("C:\\Users\\Pwitt\\Documents\\Capstone\\outpute6.xlsx","TestSheet");
+
+import "C:\\Users\\Pwitt\\Documents\\Capstone\\outpute2Map.txt";
+
+println("--TESTING IMPORT of CELLTABLE");
+println(@2);
+y = @2 + 5;
+
+println(y);
+
+closeOut();
