@@ -1,5 +1,7 @@
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 public class CellTable extends CellLangType<List<CellLangType>>{
@@ -13,6 +15,25 @@ public class CellTable extends CellLangType<List<CellLangType>>{
     private static int tableId = 0;
     
     private int uniqueTableId;
+
+    private Set<String> tableTagsSeen = new HashSet<>();
+
+    private String tableTag;
+
+
+
+    public void setTableTag(String tag) throws RuntimeException
+    {
+        if (tableTagsSeen.contains(tag))
+        {
+            throw new RuntimeException("Tags must be unique");
+        }
+        else{
+            tableTag = tag;
+            tableTagsSeen.add(tag);
+        }
+
+    }
 
     /// All CellTables must have a list of columns
     /// By default one empty row is created 

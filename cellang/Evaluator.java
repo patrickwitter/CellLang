@@ -101,6 +101,7 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 	
     }
 
+	//TODO YOU HAVE TO IMPLEMENT TOEXCEL ADD FOR EACH OPERATION 
 	// Visits an ExpAdd node and evaluates the left and right expressions, then adds the results
     public CellLangType visitExpAdd(ExpAdd exp, Environment<CellLangType> env)
 	throws VisitException {
@@ -112,7 +113,7 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 	{
 		// System.out.println("Out ADD");
 		// Check if atleast one of the expressions is an ExpTable 
-		//BUG For now both have to be tables will modify ExcelTest to fix
+		
 
 		if(val1 instanceof CellTable || val2 instanceof CellTable)
 		{
@@ -426,6 +427,18 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 			throw new VisitException("You must put an 'out' statment before writing closeOut");
 		}
 		return new CellNil();
+	}
+
+	@Override
+	public CellLangType visitImportStatement(ImportStatement importStatement, Environment<CellLangType> state)
+			throws VisitException {
+				
+				List<Pair<String, CellTable>> result = toExcel.readTablesFromMappingsFile(importStatement.getPath());
+				for (Pair<String,CellTable> pair : result) {
+					state.put(pair.getKey(), pair.getValue());
+					// toExcel.CreateStaticTable(pair.getValue());
+				}
+				return new CellNil();
 	}
 
 	

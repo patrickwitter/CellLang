@@ -48,6 +48,8 @@ terminal TABLE;
 terminal PRINT, PRINTLN;
 terminal OUT;
 terminal CLOSEOUT;
+terminal IMPORT;
+terminal String MAPVAR;
 
 /* Terminals (tokens returned by the scanner). */
 // keywords
@@ -117,6 +119,8 @@ non terminal Statement print;
 non terminal Statement outStmt;
 
 non terminal Statement closeOutStmt;
+
+non terminal Statement importStmt;
 /* **** */
 
 non terminal Exp expression;
@@ -149,7 +153,7 @@ stmtList ::= stmtList:lst stmt:s {:
 
 stmt ::= definition:d {: RESULT = d; :} |
 	 expression:e {: RESULT = new Statement(e); :} SEMI | funDefn:fd {:RESULT = fd;:} | print:p {: RESULT = p; :} SEMI |
-	 ifStmt:i {:RESULT = i;:} | ifElseStmt:i {:RESULT = i;:} | outStmt:o {:RESULT =o;:} | closeOutStmt:o {:RESULT =o;:};
+	 ifStmt:i {:RESULT = i;:} | ifElseStmt:i {:RESULT = i;:} | outStmt:o {:RESULT =o;:} | closeOutStmt:o {:RESULT =o;:} | importStmt:i{:RESULT =i;:};
 
 // Print Statements 
 print ::= PRINT LPAREN expression:exp RPAREN
@@ -162,6 +166,9 @@ outStmt ::= OUT LPAREN STRING:wbrkPath COMMA STRING:shtNm RPAREN SEMI {:RESULT =
 
 // CloseOutStatement
 closeOutStmt ::= CLOSEOUT LPAREN RPAREN SEMI {:RESULT = new CloseOutStatement();:};
+
+// Import Statement 
+importStmt ::= IMPORT STRING:path SEMI {:RESULT = new ImportStatement(path);:};
 
 /*If grammar*/
 ExpIf ::= IF LogExp:le COLON expression:consqt END {:RESULT = new ExpIf(le,consqt);:};
@@ -254,6 +261,7 @@ factor ::= INT:ilit {: RESULT = new ExpLit(ilit); :} |
 		STRING:s {:RESULT = new ExpString(s); :} | 
 		DOUBLE:d {:RESULT = new ExpDouble(d); :} |
 		VAR:var {: RESULT = new ExpVar(var); :} |
+		MAPVAR:a  {: RESULT = new ExpVar(a); :} |
 		LPAREN expression:e RPAREN {: RESULT = e; :}	| funCall:fc {:RESULT = fc;:} ;
 
 funCall ::= VAR:v LPAREN argListE:a RPAREN {:RESULT = new ExpFunCall(v,a);:};

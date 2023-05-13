@@ -35,6 +35,11 @@ public class ExcelTest {
 
     private Set<Workbook> workbookSet = new HashSet<>();
 
+    /**
+     * Names of variables seen within a mappings file
+     */
+    private Set<String> tableVariablesSeen = new HashSet<>();
+
     /* 
         This holds the cordinates of the tables we have seen so far 
         Coordinates are of the form 
@@ -87,6 +92,21 @@ public class ExcelTest {
 
     }
 
+    private Workbook getWorkbook(String workbookPath)
+    {
+    
+        Workbook workbook = null;
+        try {
+            workbook = WorkbookFactory.create(new File(workbookPath));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return workbook;
+
+    }
+
+
+
     private Sheet getSheet(Workbook w)
     {
         Sheet sheet = w.getSheet(this.SheetName);
@@ -99,6 +119,20 @@ public class ExcelTest {
            //TODO HANDLE ERROR GRACEFULLY
            return null;
        }
+
+    }
+       private Sheet getSheet(Workbook w, String sheetName)
+       {
+           Sheet sheet = w.getSheet(sheetName);
+          if (sheet != null) {
+               // System.out.println("SHEETNAME "+ sheet.getSheetName());
+              return sheet;
+          } else {
+              // Sheet not found
+           //    System.out.println("Sheet not found: " + SheetName);
+              //TODO HANDLE ERROR GRACEFULLY
+              return null;
+          }
        
        
     }
@@ -107,19 +141,46 @@ public class ExcelTest {
     /**
      * 
      * @param table The CellTable  with literal  values to write
-     * 
+     * @param paths Optional array containing the path of the workbook and name of the sheet respectively
      * @return void
      * 
      * @post Table with literal is written to Excel
      * @post Table coordinates are added to Map
+     * 
+     * 
      */
     
-    public void CreateStaticTable(CellTable table)
+    public void CreateStaticTable(CellTable table,String ... paths)
     {
+        String customWorkbookPath = null;
+        String customSheetName = null ;
+        
+        if(paths != null ){
+            if(paths.length == 2)
+            {
+                customWorkbookPath  = paths[0];
+            customSheetName= paths[1];
+            }
+           
+            
+        }
+         
+
         Integer startingColumn = getNextColumnStart();
-        // Create a new workbook and sheet
-        Workbook workbook = getWorkbook();
-        Sheet sheet = getSheet(workbook);
+        Workbook workbook ;
+        Sheet sheet ;
+        if(customSheetName != null && customWorkbookPath != null){
+             // Create a new workbook and sheet
+            workbook = getWorkbook(customWorkbookPath);
+            sheet = getSheet(workbook,customSheetName);
+        }
+
+        else
+        {
+             workbook = getWorkbook();
+             sheet = getSheet(workbook);
+        }
+       
 
         // System.out.println("SHEEET IS NULL?");
         // System.out.println(sheet == null);
@@ -656,8 +717,8 @@ public class ExcelTest {
 
 
 //---------------------- READ FROM MAPPINGS FILE  PLACE COORDINATES INTO TABLECORDFILE
-    public void readTableCoordinatesFromFile(String filePath) {
-        try (Scanner scanner = new Scanner(new File(filePath))) {
+    public void readTableCoordinatesFromMappingFile(String mappingFilePath) {
+        try (Scanner scanner = new Scanner(new File(mappingFilePath))) {
             ArrayList<String> key = null;
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine().trim();
@@ -698,8 +759,8 @@ public class ExcelTest {
 
 //------------------ READ FROM MAPPINGS FILE  GET CELLTABLES 
 
-public List<CellTable> readTablesFromFile(String mappingFilePath) {
-    List<CellTable> tables = new ArrayList<>();
+public List<Pair<String, CellTable>> readTablesFromMappingsFile(String mappingFilePath) {
+    List<Pair<String, CellTable>> tables = new ArrayList<>();
 
     try (BufferedReader reader = new BufferedReader(new FileReader(mappingFilePath))) {
         String line;
@@ -729,17 +790,36 @@ public List<CellTable> readTablesFromFile(String mappingFilePath) {
             } else if (line.startsWith("@")) {
                 // Parse table ID and cell range
                 int equalsIndex = line.indexOf('=');
-                String tableId = line.substring(1, equalsIndex).trim();
-                String range = line.substring(equalsIndex + 1, line.length() - 1).trim();
+                String tableId = line.substring(0, equalsIndex).trim();
 
+                System.out.println("---TABLE ID READ FROM MAPPINGS FILE "+tableId);
+
+                // Check for uniqueness
+                if (tableVariablesSeen.contains(tableId)) {
+                    throw new IllegalArgumentException("All variable names should be unique, duplicate found: " + tableId);
+                } else {
+                    tableVariablesSeen.add(tableId);
+                }
+
+                String range = line.substring(equalsIndex + 1, line.length() - 1).trim();
+                
                 // Parse start and end cell references
                 String[] cellReferences = range.substring(1, range.length() - 1).split(":");
+                System.out.println("CELLRANGE FOR ID "+ tableId +" "+ Arrays.toString(cellReferences));
                 ArrayList<Integer> startCoordinate = convertFromExcelNotation(cellReferences[0]);
                 ArrayList<Integer> endCoordinate = convertFromExcelNotation(cellReferences[1]);
-
+                System.out.println("CELL COORD FOR ID "+ tableId +" "+startCoordinate.toString() + " " + endCoordinate.toString());
                 // Read table data from sheet
                 CellTable table = readTableFromSheet(sheet, startCoordinate, endCoordinate);
-                tables.add(table);
+                try {
+                    // The tag should be equal the table id 
+                    table.setTableTag(tableId);
+                } catch (RuntimeException e) {
+                   
+                    e.printStackTrace();
+                } // Adding the tag to the table
+
+                tables.add(new Pair<>(tableId, table));
             }
         }
 
@@ -754,20 +834,22 @@ public List<CellTable> readTablesFromFile(String mappingFilePath) {
     return tables;
 }
 
-
 private CellTable readTableFromSheet(Sheet sheet, ArrayList<Integer> startCoordinate, ArrayList<Integer> endCoordinate) {
     CellList columns = new CellList();
     CellList rows = new CellList();
 
-    for (int rowIndex = startCoordinate.get(1); rowIndex <= endCoordinate.get(1); rowIndex++) {
+    int startRow = endCoordinate.get(1) - startCoordinate.get(1);
+
+    for (int rowIndex = startRow; rowIndex <= endCoordinate.get(1); rowIndex++) {
         Row row = sheet.getRow(rowIndex);
         CellList tableRow = new CellList();
 
+     
         for (int colIndex = startCoordinate.get(0); colIndex <= endCoordinate.get(0); colIndex++) {
             Cell cell = row.getCell(colIndex);
             CellLangType tableCell;
 
-            if (rowIndex == startCoordinate.get(1)) {
+            if (rowIndex == startRow) {
                 tableCell = new CellString(cell.getStringCellValue());
                 columns.add(tableCell);
             } else {
@@ -780,6 +862,7 @@ private CellTable readTableFromSheet(Sheet sheet, ArrayList<Integer> startCoordi
                         break;
                     case NUMERIC:
                             double numericValue = cell.getNumericCellValue();
+                            //System.out.println("CellValue " + numericValue);
                             tableCell = numericValue == (int) numericValue ? new CellInteger((int) numericValue) : new CellDouble(numericValue);
                         
                         break;
@@ -790,11 +873,11 @@ private CellTable readTableFromSheet(Sheet sheet, ArrayList<Integer> startCoordi
                 tableRow.add(tableCell);
             }
         }
-        if (rowIndex != startCoordinate.get(1)) {
+        if (rowIndex != 0) {
             rows.add(tableRow);
         }
     }
-
+    System.out.println("Contents of Table " + rows + " "+ columns);
     return new CellTable(columns, rows);
 }
 

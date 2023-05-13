@@ -92,6 +92,8 @@ NOTE:
 <YYINITIAL> "table" {return new Symbol(sym.TABLE);}
 <YYINITIAL> "out" {return new Symbol(sym.OUT);}
 <YYINITIAL> "closeOut" {return new Symbol(sym.CLOSEOUT);}
+<YYINITIAL> "import" {return new Symbol(sym.IMPORT);}
+<YYINITIAL> "@"{alphanum}+ {return new Symbol(sym.MAPVAR,yytext());}
 
 /// Arithmetic Symbols 
 <YYINITIAL>	"+"	{return new Symbol(sym.PLUS);}

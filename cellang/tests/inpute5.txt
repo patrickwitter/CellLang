@@ -1,0 +1,11 @@
+println("----TESTING IMPORT FOR STATIC TABLES");
+out("C:\\Users\\Pwitt\\Documents\\Capstone\\outpute5.xlsx","TestSheet");
+import "C:\\Users\\Pwitt\\Documents\\Capstone\\outpute1Map.txt";
+
+println("--TESTING IMPORT of CELLTABLE");
+println(@1);
+y = @1 + 5;
+
+println(y);
+
+closeOut();

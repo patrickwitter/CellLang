@@ -200,4 +200,10 @@ public class ToScheme implements Visitor<Void, String> {
 		throw new UnsupportedOperationException("Unimplemented method 'visitCloseOutStatement'");
 	}
 
+	@Override
+	public String visitImportStatement(ImportStatement importStatement, Void state) throws VisitException {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitImportStatement'");
+	}
+
 }
