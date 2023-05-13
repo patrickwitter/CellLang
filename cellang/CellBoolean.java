@@ -50,4 +50,6 @@ public class CellBoolean extends CellLangType<Boolean>{
 		return getValue() ? "true" : "false";
 	}
 
+	
+
 }

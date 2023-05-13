@@ -222,4 +222,6 @@ public class CellInteger extends CellLangType<Integer>{
 		return getValue().toString();
 	}
 
+	
+
 }

@@ -2,14 +2,25 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellReference;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.file.Paths;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
 
 public class ExcelTest {
@@ -80,11 +91,11 @@ public class ExcelTest {
     {
         Sheet sheet = w.getSheet(this.SheetName);
        if (sheet != null) {
-            System.out.println("SHEETNAME "+ sheet.getSheetName());
+            // System.out.println("SHEETNAME "+ sheet.getSheetName());
            return sheet;
        } else {
            // Sheet not found
-           System.out.println("Sheet not found: " + SheetName);
+        //    System.out.println("Sheet not found: " + SheetName);
            //TODO HANDLE ERROR GRACEFULLY
            return null;
        }
@@ -110,8 +121,8 @@ public class ExcelTest {
         Workbook workbook = getWorkbook();
         Sheet sheet = getSheet(workbook);
 
-        System.out.println("SHEEET IS NULL?");
-        System.out.println(sheet == null);
+        // System.out.println("SHEEET IS NULL?");
+        // System.out.println(sheet == null);
         
         // Write columns to the first row of the sheet
         Row headerRow = sheet.getRow(0);
@@ -140,7 +151,9 @@ public class ExcelTest {
             List<CellLangType> cellValues = ((CellList)rowsValue.get(i)).getValue();
             for (int j = 0; j < cellValues.size(); j++) {
                 Cell cell = row.createCell(j+startingColumn);
-                cell.setCellValue(cellValues.get(j).toString()); 
+                //TODO Change to literal value
+               
+                setCellValue(cell,cellValues.get(j).getValue()); 
             }
         }  
 
@@ -148,6 +161,33 @@ public class ExcelTest {
         flush(workbook);
     }
 
+    /**
+     * @pre cell is not null
+     * @param cell The cell to be written to
+     * @param value The value to be written to the cell
+     * 
+     * 
+     */
+    private void setCellValue(Cell cell , Object value)
+    {
+
+     
+        if (value instanceof Integer){
+            cell.setCellValue((Integer)value);
+        }
+        else if (value instanceof Double)
+        {
+            cell.setCellValue((Double)value);
+        }
+        else if (value instanceof Boolean)
+        {
+            cell.setCellValue((Boolean)value);
+        }
+        else
+        {
+            cell.setCellValue(value.toString());
+        }
+    }
     /**
      * 
      * @param table The CellTable with formula values  to write
@@ -203,7 +243,7 @@ public class ExcelTest {
          flush(workbook);
      }
 
-     
+    
     public void addTables(CellTable table1, CellLangType t) {
         Workbook workbook = getWorkbook();
         Sheet sheet = getSheet(workbook);
@@ -319,11 +359,6 @@ public class ExcelTest {
                         cellT2Address = new CellReference(cellT2.getRowIndex(), cellT2.getColumnIndex()).formatAsString();
                     }
 
-
-                    // String cell1Address = new CellReference(row, col).formatAsString();
-                    // String cell2Address = new CellReference(row + 1, table2Cord.get(0).get(0) + col).formatAsString();
-
-                    // String formula = "IF(ISBLANK(" + cell1Address + "),0," + cell1Address + ") + IF(ISBLANK(" + cell2Address + "),0," + cell2Address + ")";
                     String formula = "SUM("+cellT1Address+","+cellT2Address+")";
                     rowEntry.add(new CellString(formula));
                 }
@@ -456,7 +491,7 @@ public class ExcelTest {
             try {
                 w.close();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
+               
                 e.printStackTrace();
             }
         }
@@ -464,6 +499,9 @@ public class ExcelTest {
         for ( Map.Entry<ArrayList<String>,ArrayList<ArrayList<Integer>>> entry : tableCord.entrySet()) {
             System.out.println("Key = " + entry.getKey() + "\n, Value = \n" + entry.getValue());
         }
+
+        toMappingsFile();
+        System.out.println("Mappings file ran");
     }
     /**
      * @pre TableId must be unique 
@@ -554,9 +592,213 @@ public class ExcelTest {
         return getNumContentRows(tableCord) + 1;
     }
 
+//-------------------------- WRITE TO MAPPINGS FILE 
 
+    /**
+     * @pre The mappings datastructure is not null
+     * 
+     * 
+     */
+    private void toMappingsFile()
+    {
+        Map<String, ArrayList<String>> groupedTables = new HashMap<>();
+        for (Map.Entry<ArrayList<String>, ArrayList<ArrayList<Integer>>> entry : tableCord.entrySet()) {
+            ArrayList<String> key = entry.getKey();
+            ArrayList<ArrayList<Integer>> value = entry.getValue();
+            String workbookPath = key.get(0);
+            String sheetName = key.get(1);
+            String tableId = key.get(2);
+            String mapKey = workbookPath + "," + sheetName;
     
+            String coordinateRepresentation = String.format("@%s = [%s:%s];", tableId, convertToExcelNotation(value.get(0)), convertToExcelNotation(value.get(1)));
+    
+            if (!groupedTables.containsKey(mapKey)) {
+                groupedTables.put(mapKey, new ArrayList<>());
+            }
+    
+            groupedTables.get(mapKey).add(coordinateRepresentation);
+        }
+    
+        for (Map.Entry<String, ArrayList<String>> entry : groupedTables.entrySet()) {
+            String mapKey = entry.getKey();
+            String[] splitKey = mapKey.split(",");
+            String workbookPath = splitKey[0];
+            String sheetName = splitKey[1];
+            String outputFilePath = Paths.get(workbookPath).getParent().toString() + "/" + Paths.get(workbookPath).getFileName().toString().replace(".xlsx", "Map.txt");
+    
+            try (PrintWriter writer = new PrintWriter(new FileWriter(outputFilePath))) {
+                writer.println("from (" + workbookPath + "," + sheetName + ");");
+                for (String tableCoordinate : entry.getValue()) {
+                    writer.println(tableCoordinate);
+                }
+                writer.println("end;");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    
+    private String convertToExcelNotation(ArrayList<Integer> coordinate) {
+        int colIndex = coordinate.get(0);
+        int rowIndex = coordinate.get(1) + 1; // adding 1 because Excel is 1-indexed, not 0-indexed
+    
+        StringBuilder columnName = new StringBuilder();
+        while (colIndex >= 0) {
+            int charIndex = (colIndex % 26);
+            columnName.append((char) ('A' + charIndex));
+            colIndex /= 26;
+            colIndex--;
+        }
+    
+        return columnName.reverse().toString() + rowIndex;
+    }
+    //------------------END 
 
+
+//---------------------- READ FROM MAPPINGS FILE  PLACE COORDINATES INTO TABLECORDFILE
+    public void readTableCoordinatesFromFile(String filePath) {
+        try (Scanner scanner = new Scanner(new File(filePath))) {
+            ArrayList<String> key = null;
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine().trim();
+                if (line.startsWith("from")) {
+                    String[] split = line.substring(6, line.length() - 2).split(",");
+                    key = new ArrayList<>(Arrays.asList(split[0], split[1], ""));
+                } else if (line.startsWith("@")) {
+                    String[] split = line.split(" ");
+                    key.set(2, split[0].substring(1));
+                    String[] coordinates = split[2].substring(1, split[2].length() - 3).split(":");
+                    ArrayList<ArrayList<Integer>> value = new ArrayList<>();
+                    value.add(convertFromExcelNotation(coordinates[0]));
+                    value.add(convertFromExcelNotation(coordinates[1]));
+                    tableCord.put(new ArrayList<>(key), value);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    private ArrayList<Integer> convertFromExcelNotation(String cellReference) {
+        int colIndex = 0;
+        int i = 0;
+        while (i < cellReference.length() && Character.isLetter(cellReference.charAt(i))) {
+            colIndex = colIndex * 26 + (cellReference.charAt(i) - 'A' + 1);
+            i++;
+        }
+        colIndex--; // subtracting 1 because Excel is 1-indexed, not 0-indexed
+    
+        int rowIndex = Integer.parseInt(cellReference.substring(i)) - 1; // subtracting 1 because Excel is 1-indexed, not 0-indexed
+        return new ArrayList<>(Arrays.asList(colIndex, rowIndex));
+    }
+
+    //------------ END 
+
+//------------------ READ FROM MAPPINGS FILE  GET CELLTABLES 
+
+public List<CellTable> readTablesFromFile(String mappingFilePath) {
+    List<CellTable> tables = new ArrayList<>();
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(mappingFilePath))) {
+        String line;
+        String workbookPath = "";
+        String sheetName = "";
+
+        Workbook workbook = null;
+        Sheet sheet = null;
+
+        while ((line = reader.readLine()) != null) {
+            if (line.startsWith("from")) {
+                // Close previous workbook if it was opened
+                if (workbook != null) {
+                    workbook.close();
+                }
+
+                // Parse workbook path and sheet name
+                int start = line.indexOf('(') + 1;
+                int end = line.indexOf(')');
+                String[] parts = line.substring(start, end).split(",");
+                workbookPath = parts[0].trim();
+                sheetName = parts[1].trim();
+
+                // Open workbook and get sheet
+                workbook = WorkbookFactory.create(new File(workbookPath));
+                sheet = workbook.getSheet(sheetName);
+            } else if (line.startsWith("@")) {
+                // Parse table ID and cell range
+                int equalsIndex = line.indexOf('=');
+                String tableId = line.substring(1, equalsIndex).trim();
+                String range = line.substring(equalsIndex + 1, line.length() - 1).trim();
+
+                // Parse start and end cell references
+                String[] cellReferences = range.substring(1, range.length() - 1).split(":");
+                ArrayList<Integer> startCoordinate = convertFromExcelNotation(cellReferences[0]);
+                ArrayList<Integer> endCoordinate = convertFromExcelNotation(cellReferences[1]);
+
+                // Read table data from sheet
+                CellTable table = readTableFromSheet(sheet, startCoordinate, endCoordinate);
+                tables.add(table);
+            }
+        }
+
+        // Close last workbook
+        if (workbook != null) {
+            workbook.close();
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+
+    return tables;
+}
+
+
+private CellTable readTableFromSheet(Sheet sheet, ArrayList<Integer> startCoordinate, ArrayList<Integer> endCoordinate) {
+    CellList columns = new CellList();
+    CellList rows = new CellList();
+
+    for (int rowIndex = startCoordinate.get(1); rowIndex <= endCoordinate.get(1); rowIndex++) {
+        Row row = sheet.getRow(rowIndex);
+        CellList tableRow = new CellList();
+
+        for (int colIndex = startCoordinate.get(0); colIndex <= endCoordinate.get(0); colIndex++) {
+            Cell cell = row.getCell(colIndex);
+            CellLangType tableCell;
+
+            if (rowIndex == startCoordinate.get(1)) {
+                tableCell = new CellString(cell.getStringCellValue());
+                columns.add(tableCell);
+            } else {
+                switch (cell.getCellType()) {
+                    case BOOLEAN:
+                        tableCell = new CellBoolean(cell.getBooleanCellValue());
+                        break;
+                    case STRING:
+                        tableCell = new CellString(cell.getStringCellValue());
+                        break;
+                    case NUMERIC:
+                            double numericValue = cell.getNumericCellValue();
+                            tableCell = numericValue == (int) numericValue ? new CellInteger((int) numericValue) : new CellDouble(numericValue);
+                        
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Unsupported cell type: " + cell.getCellType());
+                }
+
+                tableRow.add(tableCell);
+            }
+        }
+        if (rowIndex != startCoordinate.get(1)) {
+            rows.add(tableRow);
+        }
+    }
+
+    return new CellTable(columns, rows);
+}
+
+//------------------------------- END 
 
     //BUG Potential Error
     private int getNextColumnStart()
