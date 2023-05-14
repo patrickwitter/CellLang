@@ -1272,61 +1272,6 @@ public class CellTable extends CellLangType<List<CellLangType>>{
         return String.join("\n", result);
     }
 
-
-    // public CellTable filterTable(CellTable subTable) throws TypeException {
-    //     System.out.println("ORIGINAL TABLE \n" +this);
-    //     System.out.println("\n----IN FILTER TABLE \n"+subTable);
-    //     // Create a new table with the same columns as the original table
-    //     CellTable resultTable = new CellTable(this.columns);
-    
-    //     // Get the indices of the subTable columns in the original table
-    //     List<Integer> subTableColumnIndices = new ArrayList<>();
-    //     for (CellLangType subTableColumn : subTable.columns.getValue()) {
-    //         int columnIndex = this.columns.getValue().indexOf(subTableColumn);
-    //         if (columnIndex == -1) {
-    //             throw new IllegalArgumentException("Sub table column not found in original table: " + ((CellString) subTableColumn).getValue());
-    //         }
-    //         subTableColumnIndices.add(columnIndex);
-    //     }
-    //     System.out.println("Column indices "+subTableColumnIndices);
-    //     System.out.println("ROWS IN SUBTABLE "+subTable.getRows().getValue());
-
-    //     // Iterate over each row of the original table
-    //     for (CellLangType row : this.rows.getValue()) {
-    //         CellList rowList = (CellList) row;
-    //         System.out.println("ROW  ORIGINAL"+row);
-    //         // For each row in the subTable
-    //         for (CellLangType subTableRow : subTable.getRows().getValue()) {
-    //             CellList subTableRowList = (CellList) subTableRow;
-    //             System.out.println("ROW IN SUBTABLE "+subTableRowList);
-    //             boolean rowMatches = true;
-    
-    //             // Check each column in the subTable
-    //             for (int i = 0; i < subTableColumnIndices.size(); i++) {
-    //                 int originalTableColumnIndex = subTableColumnIndices.get(i);
-    //                 CellLangType originalTableCell = rowList.getValue().get(originalTableColumnIndex);
-    //                 CellLangType subTableCell = subTableRowList.getValue().get(i);
-                    
-    //                 //System.out.println("Boolean "+subTableCell.getValue());
-    //                 // If the cell values don't match, then this row doesn't match
-    //                 if (! (Boolean)subTableCell.getValue()) {
-    //                     rowMatches = false;
-    //                     break;
-    //                 }
-    //             }
-    
-    //             // If all cell values matched, add the original row to the result table
-    //             if (rowMatches) {
-    //                 resultTable.rows.getValue().add(row);
-    //                 break; // proceed to the next row in the original table
-    //             }
-    //         }
-    //     }
-    
-    //     return resultTable;
-    // }
-
-
     public CellTable filterTable(CellTable subTable) throws TypeException {
         // System.out.println("ORIGINAL TABLE \n" +this);
         // System.out.println("\n----IN FILTER TABLE \n"+subTable);
@@ -1377,6 +1322,92 @@ public class CellTable extends CellLangType<List<CellLangType>>{
         }
     
         return resultTable;
+    }
+
+    /// Row in the form [ [ 20, ], [ 10, ], [ 10, ], ]
+    // What getcolumns look like[[ 1, ], [ 3, ], [ 5, ]]
+    public CellNil mutate(String columnName, List<CellLangType> newColVals) throws TypeException {
+        // Find the index of the given column in the original table
+        int columnIndex = -1;
+        for (int i = 0; i < this.columns.getValue().size(); i++) {
+            CellString column = (CellString) this.columns.getValue().get(i);
+            if (column.getValue().equals(columnName)) {
+                columnIndex = i;
+                break;
+            }
+        }
+    
+        // If the column does not exist, throw an exception
+        if (columnIndex == -1) {
+            throw new IllegalArgumentException("Column " + columnName + " does not exist in the table.");
+        }
+    
+        //Check that list only contains  one row
+         /// Row in the form [ [ 20, ], [ 10, ], [ 10, ], ]
+          for (CellLangType cellLangType : newColVals) {
+
+            CellList cl = (CellList) cellLangType;
+            if (cl.getValue().size() != 1) {
+                throw new IllegalArgumentException("This row should only contain a single value to be added to a column.");
+            }
+          }
+            
+        
+        // Get Column
+            CellTable column = this.getColumn(columnName);
+
+            System.out.println("What columns look like"+ column.getRows().getValue());
+
+          // What column.getRows().getValue() look like[[ 1, ], [ 3, ], [ 5, ]]
+          
+        // Check if the number of rows in the column and the input rows are equal
+        if (column.getRows().getValue().size() != newColVals.size()) {
+            throw new IllegalArgumentException("The number of rows in the input does not match the number of rows in the column.");
+        }
+    
+        
+    
+            // For each row of the table try to get the column value at the index 
+            // If the column value exists replace the value within the table 
+            // If that column value does not exist it means that it is empty and we next to check the 
+            // subsequent rows until a value is found 
+
+            //Keeps track of how many swaps were made in the row
+            int swapsMade = 0;
+            int rowIndex = 0;
+            for (CellLangType cellLangType : this.getRows().getValue()) {
+
+                // Current Row of the table 
+                CellList row = (CellList) cellLangType;
+
+                //If the column is blank in that row
+                if(columnIndex > row.getValue().size()  )
+                {
+                    //Skip row
+                    continue;
+                }
+                else
+                {   
+                    CellList colArr = (CellList)  newColVals.get(swapsMade);
+                    
+                    //Replace the column index within the row of the original table 
+                    // With that of the column index of the newColValues 
+                    row.getValue().set(columnIndex,colArr.getValue().get(0));
+                  
+                    swapsMade ++;
+                }
+
+                if(swapsMade == column.getRows().getValue().size())
+                {   
+                    //We have swapped the number of columns so we exist 
+                    break;
+                }
+                rowIndex++;
+            }
+            // originalRow.getValue().set(columnIndex, newRow.getValue().get(0));
+        
+
+        return new CellNil();
     }
 
     public int getId()

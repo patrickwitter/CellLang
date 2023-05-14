@@ -1,0 +1,10 @@
+println("-------- BIG TEST -----------");
+
+y = table(["Col1","Col2","Col3","Col4"],[[1,2,3,4],[3,4,5,6],[5,6,7,8]]);
+
+println(y);
+
+y.mut(Col1, if y.Col1 > 1: 20 else 30 end);
+
+println(y);
+

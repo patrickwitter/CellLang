@@ -113,6 +113,8 @@ non terminal ExpSelectTableCol selectCol;
 // Slice table based on column condition e.g. table[Col1 > 10]
 non terminal ExpFilterTable filterTable;
 
+non terminal ExpMethodCall methodCall;
+
 // ----------------KEYWORDS
 non terminal Statement print;
 
@@ -262,7 +264,11 @@ factor ::= INT:ilit {: RESULT = new ExpLit(ilit); :} |
 		DOUBLE:d {:RESULT = new ExpDouble(d); :} |
 		VAR:var {: RESULT = new ExpVar(var); :} |
 		MAPVAR:a  {: RESULT = new ExpVar(a); :} |
-		LPAREN expression:e RPAREN {: RESULT = e; :}	| funCall:fc {:RESULT = fc;:} ;
+		LPAREN expression:e RPAREN {: RESULT = e; :}| 
+		funCall:fc {:RESULT = fc;:} |
+		methodCall:mc {:RESULT = mc;:} ;
+
+methodCall ::= VAR:obj DOT VAR:method LPAREN argListE:args RPAREN {:RESULT = new ExpMethodCall(obj,method,args);:};
 
 funCall ::= VAR:v LPAREN argListE:a RPAREN {:RESULT = new ExpFunCall(v,a);:};
 

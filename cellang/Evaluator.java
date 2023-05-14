@@ -1,9 +1,10 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.net.Inet4Address;
 import java.util.*;
 
-import com.microsoft.schemas.office.visio.x2012.main.CellType;
+import javax.swing.SwingConstants;
+
+
 
 public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType > {
 	private BufferedReader reader;
@@ -237,7 +238,7 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 		}
 		else
 		{
-			//TODO ERROR
+			
 			CellTable r = (CellTable) res;
 			CellList rows =  r.getRows();
 			CellBoolean True = new CellBoolean(true);
@@ -467,7 +468,14 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 				// Return table that has
 				CellTable original =  (CellTable)expSelectTableCond.getTable().visit(this, arg);
 				
-				return original.filterTable(subTable);
+				CellTable x = original.filterTable(subTable);
+				//TODO TEST IT 
+				if(outCalled)
+				{
+					toExcel.CreateStaticTable(x);
+				}
+				
+				return x;
 			}
 			else 
 			{
@@ -561,6 +569,64 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 		}
 		
 		throw new VisitException("Incorrect Amount of parameters. Expecting 3");
+	}
+
+	@Override
+	public CellLangType visitExpMethodCall(ExpMethodCall expMethodCall, Environment<CellLangType> arg) throws VisitException {
+		
+		CellLangType object = expMethodCall.getObjectNm().visit(this, arg);
+
+		if(object instanceof CellTable)
+		{
+			return visitCellTableMethods(expMethodCall,(CellTable)object,arg);
+		}
+
+		throw new VisitException("Method Call not supported on Object");
+	}
+
+	private CellLangType visitCellTableMethods(ExpMethodCall expMethodCall, CellTable object,Environment<CellLangType> arg) throws VisitException {
+		if(BuiltInFunctions.builtInTableFunctions.contains(expMethodCall.getMethodNm()))
+		{
+			String methodNm = expMethodCall.getMethodNm();
+
+			if(methodNm.equals(BuiltInFunctions.mutate))
+			{
+				ArrayList<Exp> param = expMethodCall.getParams();
+
+				if(param.size() == 2)
+				{
+					int colNm = 0;
+
+					if(param.get(colNm) instanceof ExpVar)
+					{
+						String columnNm = ((ExpVar)param.get(colNm)).getVar();
+
+						int row = 1;
+
+						CellLangType rowE = param.get(row).visit(this,arg);
+
+						if(rowE instanceof CellList)
+						{
+							CellList rows = (CellList)rowE;
+
+							return object.mutate(columnNm, rows.getValue());
+
+							
+
+						}
+
+						throw new VisitException("Expecting second arguement to be a List");
+
+					}
+					
+					throw new VisitException("Expecting first arguement to be a Column Name");
+				}
+
+				throw new VisitException("Incorrect number of paramters for method "+BuiltInFunctions.mutate+" Expecting 3");
+
+			}
+		}
+		throw new VisitException("Method does not exist on CellTable");
 	}
 
 	

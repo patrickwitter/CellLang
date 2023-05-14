@@ -60,4 +60,6 @@ public interface Visitor<S, T> {
     public T visitImportStatement(ImportStatement importStatement, S state) throws VisitException;
 
     public T visitApplyFunction(ExpApply apply, S state) throws VisitException;
+
+    public T visitExpMethodCall(ExpMethodCall expMethodCall, S arg) throws VisitException;
 }

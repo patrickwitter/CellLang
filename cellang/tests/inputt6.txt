@@ -3,4 +3,12 @@ println("--------TABLE BUILT IN FUNCTIONS -----------");
 y = table(["Col1","Col2","Col3","Col4"],[[1,2,3,4],[3,4,5,6],[5,6,7,8]]);
 
 print(y);
-apply(row,sum,y);
+//apply(row,sum,y);
+
+println("------TABLE METHODS------");
+
+println("y.mut(Col1,[[10,10,10]])");
+
+y.mut(Col1,[[20],[30],[40]]);
+
+print(y);
