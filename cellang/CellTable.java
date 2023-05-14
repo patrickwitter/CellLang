@@ -1273,20 +1273,107 @@ public class CellTable extends CellLangType<List<CellLangType>>{
     }
 
 
+    // public CellTable filterTable(CellTable subTable) throws TypeException {
+    //     System.out.println("ORIGINAL TABLE \n" +this);
+    //     System.out.println("\n----IN FILTER TABLE \n"+subTable);
+    //     // Create a new table with the same columns as the original table
+    //     CellTable resultTable = new CellTable(this.columns);
+    
+    //     // Get the indices of the subTable columns in the original table
+    //     List<Integer> subTableColumnIndices = new ArrayList<>();
+    //     for (CellLangType subTableColumn : subTable.columns.getValue()) {
+    //         int columnIndex = this.columns.getValue().indexOf(subTableColumn);
+    //         if (columnIndex == -1) {
+    //             throw new IllegalArgumentException("Sub table column not found in original table: " + ((CellString) subTableColumn).getValue());
+    //         }
+    //         subTableColumnIndices.add(columnIndex);
+    //     }
+    //     System.out.println("Column indices "+subTableColumnIndices);
+    //     System.out.println("ROWS IN SUBTABLE "+subTable.getRows().getValue());
+
+    //     // Iterate over each row of the original table
+    //     for (CellLangType row : this.rows.getValue()) {
+    //         CellList rowList = (CellList) row;
+    //         System.out.println("ROW  ORIGINAL"+row);
+    //         // For each row in the subTable
+    //         for (CellLangType subTableRow : subTable.getRows().getValue()) {
+    //             CellList subTableRowList = (CellList) subTableRow;
+    //             System.out.println("ROW IN SUBTABLE "+subTableRowList);
+    //             boolean rowMatches = true;
+    
+    //             // Check each column in the subTable
+    //             for (int i = 0; i < subTableColumnIndices.size(); i++) {
+    //                 int originalTableColumnIndex = subTableColumnIndices.get(i);
+    //                 CellLangType originalTableCell = rowList.getValue().get(originalTableColumnIndex);
+    //                 CellLangType subTableCell = subTableRowList.getValue().get(i);
+                    
+    //                 //System.out.println("Boolean "+subTableCell.getValue());
+    //                 // If the cell values don't match, then this row doesn't match
+    //                 if (! (Boolean)subTableCell.getValue()) {
+    //                     rowMatches = false;
+    //                     break;
+    //                 }
+    //             }
+    
+    //             // If all cell values matched, add the original row to the result table
+    //             if (rowMatches) {
+    //                 resultTable.rows.getValue().add(row);
+    //                 break; // proceed to the next row in the original table
+    //             }
+    //         }
+    //     }
+    
+    //     return resultTable;
+    // }
+
+
     public CellTable filterTable(CellTable subTable) throws TypeException {
-        // Create a new empty result table with the same columns as this table
+        // System.out.println("ORIGINAL TABLE \n" +this);
+        // System.out.println("\n----IN FILTER TABLE \n"+subTable);
+        // Create a new table with the same columns as the original table
         CellTable resultTable = new CellTable(this.columns);
     
-        // Iterate over rows of this table
-        for (CellLangType row : this.rows.getValue()) {
-            // Check if the subTable contains this row in its first column
-            for (CellLangType subTableRow : subTable.rows.getValue()) {
-                if (((CellList) row).getValue().get(0).equals(((CellList) subTableRow).getValue().get(0))) {
-                    // If it does, add the row to the result table
-                    resultTable.rows.getValue().add(row);
-                    break;
-                }
+        // Get the indices of the subTable columns in the original table
+        List<Integer> subTableColumnIndices = new ArrayList<>();
+        for (CellLangType subTableColumn : subTable.columns.getValue()) {
+            int columnIndex = this.columns.getValue().indexOf(subTableColumn);
+            if (columnIndex == -1) {
+                throw new IllegalArgumentException("Sub table column not found in original table: " + ((CellString) subTableColumn).getValue());
             }
+            subTableColumnIndices.add(columnIndex);
+        }
+        // System.out.println("Column indices "+subTableColumnIndices);
+        // System.out.println("ROWS IN SUBTABLE "+subTable.getRows().getValue());
+        int x =0;
+        for (CellLangType row : this.rows.getValue()) {
+            CellList rowList = (CellList) row;
+            
+            // System.out.println("ROW  ORIGINAL"+row);
+                CellLangType subTableRow = subTable.getRows().getValue().get(x);
+                CellList subTableRowList = (CellList) subTableRow;
+                // System.out.println("ROW IN SUBTABLE "+subTableRowList);
+                boolean rowMatches = true;
+    
+                // Check each column in the subTable
+                for (int i = 0; i < subTableColumnIndices.size(); i++) {
+                    // int originalTableColumnIndex = subTableColumnIndices.get(i);
+                    // CellLangType originalTableCell = rowList.getValue().get(originalTableColumnIndex);
+                    CellLangType subTableCell = subTableRowList.getValue().get(i);
+                    
+                    // System.out.println("Boolean "+subTableCell.getValue());
+                    // If the cell values don't match, then this row doesn't match
+                    if (! (Boolean)subTableCell.getValue()) {
+                        rowMatches = false;
+                        break;
+                    }
+                }
+    
+                // If all cell values matched, add the original row to the result table
+                if (rowMatches) {
+                    resultTable.rows.getValue().add(row);
+                    //break; // proceed to the next row in the original table
+                }
+            x++;
         }
     
         return resultTable;
