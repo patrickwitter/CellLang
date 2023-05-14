@@ -94,6 +94,7 @@ NOTE:
 <YYINITIAL> "closeOut" {return new Symbol(sym.CLOSEOUT);}
 <YYINITIAL> "import" {return new Symbol(sym.IMPORT);}
 <YYINITIAL> "@"{alphanum}+ {return new Symbol(sym.MAPVAR,yytext());}
+
 //<YYINITIAL> "mut" {return new Symbol(sym.MUTATE);}
 
 /// Arithmetic Symbols 

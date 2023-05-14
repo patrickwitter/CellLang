@@ -83,24 +83,33 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 
         Environment<CellLangType> child = new Environment<CellLangType>();
 
-        Closure<CellLangType> funDef = env.getClosure(fc.funName);
+		try {
+			Closure<CellLangType> funDef = env.getClosure(fc.funName);
 
-        if(funDef == null)
-        {
-            throw new RuntimeException("Function not defined or defined after Call");
-        }
-
-		if(funDef.getFunction().paramList.size() != fc.args.size())
-		{
-			throw new RuntimeException("Numerical Mismatch between number of paramaters of function definition and arguements in function call");
-		}
-        for(int i = 0; i < fc.args.size(); i++)
-        {
-            CellLangType answer = fc.args.get(i).visit(this, env);
-            child.put(funDef.getFunction().paramList.get(i),answer);
-        }
-        child.parent = funDef.getClosingEnv();
-        return funDef.getFunction().body.visit(this, child);
+			if(funDef.getFunction().paramList.size() != fc.args.size())
+			{
+				throw new RuntimeException("Numerical Mismatch between number of paramaters of function definition and arguements in function call");
+			}
+			for(int i = 0; i < fc.args.size(); i++)
+			{
+				CellLangType answer = fc.args.get(i).visit(this, env);
+				child.put(funDef.getFunction().paramList.get(i),answer);
+			}
+			child.parent = funDef.getClosingEnv();
+			return funDef.getFunction().body.visit(this, child);
+			
+		} catch (UnboundVarException e) {
+			if(BuiltInFunctions.builtInFunctions.contains(fc.funName))
+			{
+				if(fc.funName.equals( BuiltInFunctions.apply))
+				{
+					return visitApplyFunction(new ExpApply(fc.args), env);
+				}
+			}
+			System.out.println(BuiltInFunctions.builtInFunctions);
+            throw new RuntimeException("Function not defined or defined after Call: "+fc.funName);
+			
+		}		
 	
     }
 
@@ -511,6 +520,47 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 					// toExcel.CreateStaticTable(pair.getValue());
 				}
 				return new CellNil();
+	}
+
+	@Override
+	public CellLangType visitApplyFunction(ExpApply apply, Environment<CellLangType> state) throws VisitException {
+		
+		if(apply.getparams().size() == 3)
+		{
+			if(apply.getparams().get(0) instanceof ExpVar){
+				String rowOrCol = ((ExpVar) apply.getparams().get(0)).getVar();
+				
+				if(rowOrCol.equals("row") || rowOrCol.equals( "col"))
+				{
+					if (apply.getparams().get(1) instanceof ExpVar)
+					{
+						String fun = ((ExpVar) apply.getparams().get(1)).getVar();
+						// System.out.println(fun);
+						if(fun.equals( "sum"))
+						{
+							if(apply.getparams().get(2) instanceof ExpVar)
+							{
+								CellLangType t =  ((ExpVar) apply.getparams().get(2)).visit(this, state);
+
+								if (t instanceof CellTable)
+								{
+									return ((CellTable) t).applySum();
+								}
+							}
+							throw new VisitException("Final arguement should be a CellTable ");
+						}
+					}
+
+					throw new VisitException("Second arguement should be a function: Built in or otherwise.");
+				}
+			}
+			
+			
+				throw new VisitException("First arguement should be 'row or col'.");
+			
+		}
+		
+		throw new VisitException("Incorrect Amount of parameters. Expecting 3");
 	}
 
 	

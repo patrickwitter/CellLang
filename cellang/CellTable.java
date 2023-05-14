@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -1296,7 +1297,60 @@ public class CellTable extends CellLangType<List<CellLangType>>{
         return uniqueTableId;
     }
     
+    public CellTable applySum() {
+        // [[],[]]
+        CellList rows = this.getRows(); // assuming getRows() returns List of rows
+        List<CellLangType> newRows = new ArrayList<>();
+        //System.out.println(rows);
+        for (CellLangType r: rows.getValue()) {
+            CellList row = (CellList) r;
+            double sum = 0;
+            for (CellLangType cell : row.getValue()) {
+                if (cell instanceof CellDouble) {
+                    sum += ((CellDouble) cell).getValue(); // assuming getValue() returns the value of the cell
+                } else if (cell instanceof CellInteger) {
+                    sum += ((CellInteger) cell).getValue(); 
+                }
+                // System.out.println("SUM "+ sum);
+                // handle other cell types as needed
+            }
+           CellList x = new CellList();
+           x.add( new CellDouble(sum)); //[9]
+
+            newRows.add(x);
+            //System.out.println(newRows); // creating a new CellDouble for each sum, change as needed
+        }
     
+        CellTable outputTable = new CellTable(new CellList(Arrays.asList( new CellString("Sum"))), new CellList(newRows)); // creating a new CellTable with the sums
+        // System.out.println(outputTable.getRows());
+        // System.out.println(outputTable.getColumns());
+        return outputTable;
+    }
+
+    public CellTable applyMul() {
+        // [[],[]]
+        CellList rows = this.getRows(); // assuming getRows() returns List of rows
+        List<CellLangType> newRows = new ArrayList<>();
+    
+        for (CellLangType r: rows.getValue()) {
+            CellList row = (CellList) r;
+            double sum = 0;
+            for (CellLangType cell : row.getValue()) {
+                if (cell instanceof CellDouble) {
+                    sum *= ((CellDouble) cell).getValue(); // assuming getValue() returns the value of the cell
+                } else if (cell instanceof CellInteger) {
+                    sum *= ((CellInteger) cell).getValue(); 
+                }
+                // handle other cell types as needed
+            }
+            newRows.add(new CellList().add( new CellDouble(sum))); // creating a new CellDouble for each sum, change as needed
+        }
+
+
+    
+        CellTable outputTable = new CellTable(this.getColumns(), new CellList(newRows)); // creating a new CellTable with the sums
+        return outputTable;
+    }
     
     
     

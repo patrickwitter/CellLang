@@ -58,4 +58,6 @@ public interface Visitor<S, T> {
     public T visitCloseOutStatement(CloseOutStatement closeOutStatement, S state) throws VisitException;
 
     public T visitImportStatement(ImportStatement importStatement, S state) throws VisitException;
+
+    public T visitApplyFunction(ExpApply apply, S state) throws VisitException;
 }
