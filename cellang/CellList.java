@@ -41,5 +41,16 @@ public class CellList extends CellLangType<List<CellLangType>>{
         return new CellNil();
     }
 
+    /**
+     * Returns a view of the portion of this list between the specified fromIndex, inclusive, and toIndex, exclusive.
+     * @param start The starting index (inclusive)
+     * @param end The ending index (inclusive)
+     * @return The sublist from index start to index end
+     */
+    public CellLangType slice(int start, int end)
+    {
+        return new CellList(this.getValue().subList(start, end+1));
+    }
+
     
 }

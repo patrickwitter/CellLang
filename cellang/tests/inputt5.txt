@@ -17,3 +17,11 @@ println(y.Col1);
 println("----FILTERING---");
 println("y[Col1>3]");
 println(y[Col1>3]);
+
+println("---IFSTATMENTS----");
+
+println("if y > 3: 10 else 20 end");
+
+println(if y > 3: 10 else 20 end);
+
+println("");

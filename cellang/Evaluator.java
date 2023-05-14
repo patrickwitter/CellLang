@@ -1,6 +1,9 @@
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.net.Inet4Address;
 import java.util.*;
+
+import com.microsoft.schemas.office.visio.x2012.main.CellType;
 
 public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType > {
 	private BufferedReader reader;
@@ -130,6 +133,7 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 			
 		}
 	}
+
 	return val1.add( val2);
     }
 
@@ -201,23 +205,71 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 
 	public CellLangType visitExpIf(ExpIf exp, Environment<CellLangType> env)
 	throws VisitException {
-		CellBoolean res = (CellBoolean)exp.predicate.visit(this, env);
-		boolean istrue =  (boolean)res.areEqual(new CellBoolean(true)).getValue();
-		if(istrue )
+		CellLangType res = exp.predicate.visit(this, env);
+
+		if (!(res instanceof CellTable) )
 		{
-			return exp.consequent.visit(this, env);
-		}
-		else 
-		{
-			if(exp.alternative != null)
+			boolean istrue =  (boolean)res.areEqual(new CellBoolean(true)).getValue();
+			if(istrue )
 			{
-				return exp.alternative.visit(this, env);
+				return exp.consequent.visit(this, env);
 			}
 			else 
 			{
-				return new CellDouble(0.0);
+				if(exp.alternative != null)
+				{
+					return exp.alternative.visit(this, env);
+				}
+				else 
+				{
+					return new CellInteger(0);
+				}
 			}
 		}
+		else
+		{
+			//TODO ERROR
+			CellTable r = (CellTable) res;
+			CellList rows =  r.getRows();
+			CellBoolean True = new CellBoolean(true);
+			CellList newRows = new CellList();
+
+			for (int rw = 0; rw < rows.getValue().size(); rw++) {
+				
+				CellList row = (CellList) rows.getValue().get(rw);
+			
+				List<CellLangType> rowValues = row.getValue();
+				
+				CellList newRow = new CellList();
+
+				for (int rwEntry = 0; rwEntry < rowValues.size(); rwEntry++) {
+								
+					CellLangType rowEntry = rowValues.get(rwEntry);
+
+					if((Boolean)rowEntry.areEqual(True).getValue())
+					{
+						newRow.add(exp.consequent.visit(this, env));
+					}
+					else 
+					{
+						if(exp.alternative != null)
+						{
+							newRow.add( exp.alternative.visit(this, env));
+						}
+						else 
+						{
+							newRow.add( new CellInteger(0));
+						}
+					}
+								
+				}
+
+				newRows.add(newRow);
+
+			}
+			return newRows;
+		}
+		
     }
 
 	@Override
@@ -333,8 +385,28 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 						throw new VisitException(e.getMessage());
 					}
 				}
+				else if(t instanceof CellList)
+				{	
+					String regEx = "-?\\d+(\\.\\d+)?";
+					
+
+					if(expSliceTable.getColumn1().matches(regEx) && expSliceTable.getColumn2().matches(regEx))
+					{
+						Integer start = Integer.parseInt(expSliceTable.getColumn1());
+						Integer end = 	Integer.parseInt(expSliceTable.getColumn2());
+
+						return ((CellList) t).slice(start, end);
+					}
+						
+					else
+					{
+						throw new VisitException("start or end index not an Integer for slicing CellList");
+					}
+						
+
+				}
 				else {
-					throw new VisitException("Slicing Operator only works for tables");
+					throw new VisitException("Slicing Operator only works for CellTables and CellLists");
 				}
 	}
 
@@ -441,6 +513,7 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 				return new CellNil();
 	}
 
+	
 	
 	
 }

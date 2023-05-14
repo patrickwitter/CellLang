@@ -7,4 +7,5 @@ salary =  [50000, 60000, 70000, 80000];
 // Create a table
 t  = [name, age, gender, salary];
 //Print Table
-t;
+
+print(salary[0:2]);

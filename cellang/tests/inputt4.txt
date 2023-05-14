@@ -25,6 +25,9 @@ println("-------TESTING BOOLEAN OPERATIONS ON ASYMMETRIC TABLES-------");
 println("Original x");
 println(x);
 
+println("Original y");
+println(y);
+
 println("x>y");
 println({x > y});
 

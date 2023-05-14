@@ -13,6 +13,14 @@ public class ExpSliceTable extends Exp {
 
     }
 
+    protected ExpSliceTable(ExpVar table, Integer col1, Integer col2) {
+        super("Slice Table");
+        tblnm = table;
+        this.col1 =  Integer.toString( col1);
+        this.col2 = Integer.toString( col2);
+
+    }
+
     @Override
     public <S, T> T visit(Visitor<S, T> v, S arg) throws VisitException {
         return v.visitExpSliceTable(this, arg);

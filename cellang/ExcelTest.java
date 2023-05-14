@@ -549,6 +549,7 @@ public class ExcelTest {
 
     public void closeAll()
     {
+        
         for (Workbook w : workbookSet) {
             try {
                 w.close();
@@ -562,8 +563,12 @@ public class ExcelTest {
             System.out.println("Key = " + entry.getKey() + "\n, Value = \n" + entry.getValue());
         }
 
-        toMappingsFile();
-        System.out.println("Mappings file ran");
+        if(!tableCord.isEmpty())
+        {
+            toMappingsFile();
+            System.out.println("Mappings file ran");
+        }
+     
     }
 
 

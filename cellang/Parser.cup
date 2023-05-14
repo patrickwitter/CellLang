@@ -179,10 +179,10 @@ ExpIfElse ::= IF LogExp:le COLON expression:consqt ELSE expression:alt END {:RES
 //TODO IMPLEMENT IF STATEMENT
 // NOTE THAT SEMI COLONA HAVE TO BE EXPLICIT WITH STATEMENTS 
 /// IF STMT 
-ifStmt ::= IF LogExp:le LBRACE expression:consqt RBRACE {:RESULT =  new IfStatement(consqt);:};
+ifStmt ::= IF LogExp:le LBRACE stmtList:consqt RBRACE {:RESULT =  new IfStatement(le,consqt);:};
 
 /// IFELSE STMT 
-ifElseStmt ::= IF LogExp:le LBRACE expression:consqt RBRACE ELSE LBRACE expression:alt RBRACE {:RESULT =  new IfStatement(consqt);:};
+ifElseStmt ::= IF LogExp:le LBRACE stmtList:consqt RBRACE ELSE LBRACE stmtList:alt RBRACE {:RESULT =  new IfStatement(le,consqt,alt);:};
 
 /// Logical expression 
 LogExp ::= expression:l CMP:c expression:r {:RESULT = new ExpLogic(l,r,c);:} | expression:l EQU expression:r {:RESULT = new ExpLogic(l,r,Cmp.EQ);:};
@@ -235,8 +235,9 @@ listRows ::= listRows:row COMMA listConstruct:rowEntry {:row.add(rowEntry); RESU
 ///----------------- TABLE OPERATIONS 
 
 // Slicing e..g table[Col1:Col2]
-
-sliceTable ::= VAR:tableNm LBRAK VAR:Col1 COLON VAR:Col2 RBRAK {:RESULT = new ExpSliceTable(new ExpVar(tableNm),Col1,Col2);:};
+// Slicing List list[1:2]
+sliceTable ::= VAR:tableNm LBRAK VAR:Col1 COLON VAR:Col2 RBRAK {:RESULT = new ExpSliceTable(new ExpVar(tableNm),Col1,Col2);:} |
+                VAR:tableNm LBRAK INT:Col1 COLON INT:Col2 RBRAK {:RESULT = new ExpSliceTable(new ExpVar(tableNm),Col1,Col2);:}  ;
 
 // Select sub-Table based on  Column e.g. table.Col1
 selectCol ::= VAR:tableNm DOT VAR:col {:RESULT = new ExpSelectTableCol(new ExpVar(tableNm),col);:}; 
@@ -244,7 +245,6 @@ selectCol ::= VAR:tableNm DOT VAR:col {:RESULT = new ExpSelectTableCol(new ExpVa
 // Select subTable based on  condition e.g. table[Col1>3]
 // TODO Check if the left side of the expression is a VAR if not throw error
 filterTable ::= VAR:tableNm LBRAK LogExp:expr RBRAK {:RESULT = new ExpFilterTable(new ExpVar(tableNm),expr) ;:};
-
 
 ///----------------------END 
 
