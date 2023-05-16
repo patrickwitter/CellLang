@@ -3,13 +3,13 @@ out("C:\\Users\\Pwitt\\Documents\\Capstone\\outpute2.xlsx","TestSheet");
 x = table(["Col1","Col2"],[[1,2],[3,4]]);
 y = table(["Col1Y","Col2Y"],[[5,6],[7,8]]);
 
-println(x);
+//println(x);
 
 println(y);
 
 
-z = x+y*y;
+z = x +  y*y - x;
 
-println(z);
+//println(z);
 
 closeOut();

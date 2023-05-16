@@ -299,13 +299,13 @@ public class ExcelTest {
                  cell.setCellFormula(cellValues.get(j).toString()); 
              }
          }  
- 
+         
          addCoord(Integer.toString(table.getId()), new ArrayList<Integer>(List.of(startingColumn,rowsValue.size())), new ArrayList<Integer>(List.of(startingColumn +columnsValue.size()-1,rowsValue.size())));
          flush(workbook);
      }
 
-    
-    public void addTables(CellTable table1, CellLangType t) {
+//----------------------------ADD TABLES     
+    public String addTables(CellTable table1, CellLangType t) {
         Workbook workbook = getWorkbook();
         Sheet sheet = getSheet(workbook);
         
@@ -324,18 +324,46 @@ public class ExcelTest {
             // System.out.println("TABLE 1 ID: "+tableId1 + " TABLE 2 ID: "+tableId2);
             // If any table is not present, write it to Excel 
             // And put it to mapping 
-            if (!isTablePresent(tableId1)) {
-                CreateStaticTable(table1);
+            System.out.println(table1.getTag() + " "+table1.getId());
+            System.out.println(table2.getTag() + " "+ table2.getId());
+            if(table1.hasTag())
+            {
+                if (!isTablePresent(table1.getTag())) {
+                    CreateStaticTable(table1);
+                }
+                tableId1 = table1.getTag();
             }
-            if (!isTablePresent(tableId2)) {
-                CreateStaticTable(table2);
+            else
+            {
+                if (!isTablePresent(tableId1)) {
+                    CreateStaticTable(table1);
+                    System.out.println(table1.getTag() + "Table not present "+table1.getId());
+                }
+            }
+          
+            if(table2.hasTag())
+            {
+                if (!isTablePresent(table2.getTag())) {
+                    CreateStaticTable(table2);
+                    
+                }
+                
+                tableId2 = table2.getTag();
+            }
+            else
+            {
+                if (!isTablePresent(tableId2)) {
+                    CreateStaticTable(table2);
+                    System.out.println(table2.getTag() + " Table not present "+ table2.getId());
+                }
             }
         
             // Getting coordinates of both tables
             ArrayList<ArrayList<Integer>> table1Cord = getTableCordValue(tableId1);
             ArrayList<ArrayList<Integer>> table2Cord = getTableCordValue(tableId2);
 
-            // System.out.println("COORDINATES ADD T1CORD "+ table1Cord + "\n T2CORD " + table2Cord);
+            
+            System.out.println("COORDINATES ADD T1CORD "+ table1Cord + "\n T2CORD " + table2Cord);
 
             // Getting the number of Content rows in both tables 
             int numCRowsTable1 = getNumContentRows(table1Cord);
@@ -430,6 +458,7 @@ public class ExcelTest {
             }
         
             CreateFormulaTable(result);
+            return result.getTag();
         }
 //---------------------- TODO ADDING SCALARS
         else 
@@ -452,7 +481,14 @@ public class ExcelTest {
             String tableId1 = Integer.toString(table1.getId());
             String constantId = Integer.toString(constant.getId());
 
-            //IF Table not present create it 
+            //TODO CHECK FOR TAG
+            //IF Table not present create it
+            
+            if(table1.hasTag())
+            {
+                tableId1 = table1.getTag();
+            }
+
             if (!isTablePresent(tableId1)) {
                 CreateStaticTable(table1);
             }
@@ -527,12 +563,13 @@ public class ExcelTest {
             }
         
             CreateFormulaTable(result);
+            return result.getTag();
         }
         
     }
 
 //-------------------------SUBTABLES 
-    public void subTables(CellTable table1, CellLangType t) {
+    public String subTables(CellTable table1, CellLangType t) {
         Workbook workbook = getWorkbook();
         Sheet sheet = getSheet(workbook);
         
@@ -550,6 +587,18 @@ public class ExcelTest {
             // System.out.println("TABLE 1 ID: "+tableId1 + " TABLE 2 ID: "+tableId2);
             // If any table is not present, write it to Excel 
             // And put it to mapping 
+            //TODO CHECK FOR TAG
+
+            if(table1.hasTag())
+            {
+                tableId1 = table1.getTag();
+            }
+
+            if(table2.hasTag())
+            {
+                tableId2 = table2.getTag();
+            }
+
             if (!isTablePresent(tableId1)) {
                 CreateStaticTable(table1);
             }
@@ -656,6 +705,7 @@ public class ExcelTest {
             }
         
             CreateFormulaTable(result);
+            return result.getTag();
         }
 //---------------------- TODO ADDING SCALARS
         else 
@@ -677,6 +727,11 @@ public class ExcelTest {
 
             String tableId1 = Integer.toString(table1.getId());
             String constantId = Integer.toString(constant.getId());
+
+            if(table1.hasTag())
+            {
+                tableId1 = table1.getTag();
+            }
 
             //IF Table not present create it 
             if (!isTablePresent(tableId1)) {
@@ -753,6 +808,7 @@ public class ExcelTest {
             }
         
             CreateFormulaTable(result);
+            return result.getTag();
         }
         
     }
@@ -760,7 +816,7 @@ public class ExcelTest {
 
 //---------------------MULTABLES 
 
-    public void mulTables(CellTable table1, CellLangType t) {
+    public String mulTables(CellTable table1, CellLangType t) {
         Workbook workbook = getWorkbook();
         Sheet sheet = getSheet(workbook);
         
@@ -778,13 +834,25 @@ public class ExcelTest {
             // System.out.println("TABLE 1 ID: "+tableId1 + " TABLE 2 ID: "+tableId2);
             // If any table is not present, write it to Excel 
             // And put it to mapping 
+
+            if(table1.hasTag())
+            {
+                tableId1 = table1.getTag();
+            }
+
+            if(table2.hasTag())
+            {
+                tableId2 = table2.getTag();
+            }
+
             if (!isTablePresent(tableId1)) {
                 CreateStaticTable(table1);
             }
+
             if (!isTablePresent(tableId2)) {
                 CreateStaticTable(table2);
             }
-        
+            
             // Getting coordinates of both tables
             ArrayList<ArrayList<Integer>> table1Cord = getTableCordValue(tableId1);
             ArrayList<ArrayList<Integer>> table2Cord = getTableCordValue(tableId2);
@@ -813,6 +881,8 @@ public class ExcelTest {
 
             CellTable result =  new CellTable(new CellList());
             CellList colNms =  new CellList();
+
+            System.out.println("RESULT ID "+result.getId());
             /// Iterate through the longest table and create a table with columnsT1 "+" columnsT2 
 
             // System.out.println("TABLE1 COLUMN"+table1.getColumns().getValue().toString());
@@ -884,8 +954,9 @@ public class ExcelTest {
             }
         
             CreateFormulaTable(result);
+            return result.getTag();
         }
-//---------------------- TODO ADDING SCALARS
+//----------------------  ADDING SCALARS
         else 
         {
             System.out.println("---------ADDING SCALAR TO TABLE SCLALR "+t.toString() );
@@ -905,6 +976,11 @@ public class ExcelTest {
 
             String tableId1 = Integer.toString(table1.getId());
             String constantId = Integer.toString(constant.getId());
+
+            if(table1.hasTag())
+            {
+                tableId1 = table1.getTag();
+            }
 
             //IF Table not present create it 
             if (!isTablePresent(tableId1)) {
@@ -980,13 +1056,14 @@ public class ExcelTest {
             }
         
             CreateFormulaTable(result);
+            return result.getTag();
         }
         
     }
 
+//------------------------DIVTABLES
 
-
-    public void divTables(CellTable table1, CellLangType t) {
+    public String divTables(CellTable table1, CellLangType t) {
         Workbook workbook = getWorkbook();
         Sheet sheet = getSheet(workbook);
         
@@ -1004,6 +1081,17 @@ public class ExcelTest {
             // System.out.println("TABLE 1 ID: "+tableId1 + " TABLE 2 ID: "+tableId2);
             // If any table is not present, write it to Excel 
             // And put it to mapping 
+
+            if(table1.hasTag())
+            {
+                tableId1 = table1.getTag();
+            }
+
+            if(table2.hasTag())
+            {
+                tableId2 = table2.getTag();
+            }
+
             if (!isTablePresent(tableId1)) {
                 CreateStaticTable(table1);
             }
@@ -1110,8 +1198,9 @@ public class ExcelTest {
             }
         
             CreateFormulaTable(result);
+            return result.getTag();
         }
-//---------------------- TODO ADDING SCALARS
+//----------------------  ADDING SCALARS
         else 
         {
             System.out.println("---------ADDING SCALAR TO TABLE SCLALR "+t.toString() );
@@ -1131,6 +1220,11 @@ public class ExcelTest {
 
             String tableId1 = Integer.toString(table1.getId());
             String constantId = Integer.toString(constant.getId());
+
+            if(table1.hasTag())
+            {
+                tableId1 = table1.getTag();
+            }
 
             //IF Table not present create it 
             if (!isTablePresent(tableId1)) {
@@ -1206,6 +1300,7 @@ public class ExcelTest {
             }
         
             CreateFormulaTable(result);
+            return result.getTag();
         }
         
     }
@@ -1264,6 +1359,7 @@ public class ExcelTest {
      */
     private void addCoord (String tableId,ArrayList<Integer> startofTable,ArrayList<Integer> endofTable)
     {
+        System.out.println("Table with ID "+tableId+"Added to MAP");
         tableCord.put(new ArrayList<String>(List.of(WorkbookPath,SheetName,tableId)), new ArrayList<ArrayList<Integer>>(List.of(startofTable,endofTable)));
     }
 
@@ -1502,13 +1598,9 @@ public List<Pair<String, CellTable>> readTablesFromMappingsFile(String mappingFi
                 System.out.println("CELL COORD FOR ID "+ tableId +" "+startCoordinate.toString() + " " + endCoordinate.toString());
                 // Read table data from sheet
                 CellTable table = readTableFromSheet(sheet, startCoordinate, endCoordinate,workbookToRead);
-                try {
-                    // The tag should be equal the table id 
+                
                     table.setTableTag(tableId);
-                } catch (RuntimeException e) {
-                   
-                    e.printStackTrace();
-                } // Adding the tag to the table
+              
 
                 tables.add(new Pair<>(tableId, table));
             }

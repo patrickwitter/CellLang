@@ -130,16 +130,21 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 
 		if(val1 instanceof CellTable || val2 instanceof CellTable)
 		{
+			
+			CellTable res = (CellTable) val1.mul(val2);
+			String tag ;
+			
 			if(val1 instanceof CellTable)
 			{
-				toExcel.addTables((CellTable) val1 , val2);
+				tag = toExcel.addTables((CellTable) val1 , val2);
 			}
 
 			else
 			{
-				toExcel.addTables((CellTable) val2 , val1);
+				tag = toExcel.addTables((CellTable) val2 , val1);
 			}
-			// System.out.println("Adding Tables to Excel");
+			res.setTableTag(tag);
+			return res;
 			
 		}
 	}
@@ -162,16 +167,21 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 
 		if(val1 instanceof CellTable || val2 instanceof CellTable)
 		{
+			CellTable res = (CellTable) val1.mul(val2);
+			String tag ;
+			
+			
 			if(val1 instanceof CellTable)
 			{
-				toExcel.subTables((CellTable) val1 , val2);
+				tag = toExcel.subTables((CellTable) val1 , val2);
 			}
 
 			else
 			{
-				toExcel.subTables((CellTable) val2 , val1);
+				tag = toExcel.subTables((CellTable) val2 , val1);
 			}
-			// System.out.println("Adding Tables to Excel");
+			res.setTableTag(tag);
+			return res;
 			
 		}
 	}
@@ -193,15 +203,20 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 
 		if(val1 instanceof CellTable || val2 instanceof CellTable)
 		{
+			CellTable res = (CellTable) val1.mul(val2);
+			String tag ;
 			if(val1 instanceof CellTable)
 			{
-				toExcel.mulTables((CellTable) val1 , val2);
+				  tag = toExcel.mulTables((CellTable) val1 , val2);
 			}
 
 			else
 			{
-				toExcel.mulTables((CellTable) val2 , val1);
+				 tag = toExcel.mulTables((CellTable) val2 , val1);
 			}
+
+			res.setTableTag(tag);
+			return res;
 			// System.out.println("Adding Tables to Excel");
 			
 		}
@@ -228,16 +243,21 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 
 		if(val1 instanceof CellTable || val2 instanceof CellTable)
 		{
+			CellTable res = (CellTable) val1.mul(val2);
+			String tag ;
+			
+			
 			if(val1 instanceof CellTable)
 			{
-				toExcel.divTables((CellTable) val1 , val2);
+				tag = toExcel.divTables((CellTable) val1 , val2);
 			}
 
 			else
 			{
-				toExcel.divTables((CellTable) val2 , val1);
+				tag = toExcel.divTables((CellTable) val2 , val1);
 			}
-			// System.out.println("Adding Tables to Excel");
+			res.setTableTag(tag);
+			return res;
 			
 		}
 	}

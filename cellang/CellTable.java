@@ -13,7 +13,7 @@ public class CellTable extends CellLangType<List<CellLangType>>{
     // Specifically a list of lists
     private CellList rows;
 
-    private static int tableId = 0;
+    private static int globalTableId = 0;
     
     private int uniqueTableId;
 
@@ -22,19 +22,41 @@ public class CellTable extends CellLangType<List<CellLangType>>{
     private String tableTag;
 
 
-
-    public void setTableTag(String tag) throws RuntimeException
+    /**
+     * @pre Table X has been created 
+     * 
+     * @pre Table Y has been created 
+     * 
+     * @post Two tables will share the same id 
+     * 
+     * Bounds table with some relationship to the same ID
+     * The tag is a string representaion of a Table ID 
+     *   
+     * @param tag The table id to be referenced 
+     */
+    public void setTableTag(String tag) 
     {
-        if (tableTagsSeen.contains(tag))
-        {
-            throw new RuntimeException("Tags must be unique");
-        }
-        else{
+  
             tableTag = tag;
-            tableTagsSeen.add(tag);
+            //tableTagsSeen.add(tag);    
+    }
+
+    public String getTag()
+    {
+        if(tableTag == null)
+        {
+            return Integer.toString(uniqueTableId);
         }
 
+        return tableTag;
     }
+
+    public boolean hasTag()
+    {
+        return tableTag != null;
+    }
+
+    
 
     /// All CellTables must have a list of columns
     /// By default one empty row is created 
@@ -47,7 +69,7 @@ public class CellTable extends CellLangType<List<CellLangType>>{
 
         this.columns = columns;
         rows = new CellList();
-       uniqueTableId =  tableId++;
+       uniqueTableId =  globalTableId++;
         /// TABLE OF THE FORM [ ["Col1", "Col2"], [] ]
     }
 
@@ -68,7 +90,7 @@ public class CellTable extends CellLangType<List<CellLangType>>{
 
         this.columns = columns;
         this.rows = new CellList( super.getValue().subList(1, super.getValue().size()));
-        uniqueTableId =  tableId++;
+        uniqueTableId =  globalTableId++;
          /// []*0* - The 0th index
          /// TABLE OF THE FORM [ ["Col1", "Col2"], []*0*,.......[]*numrows-1* ]
     }
@@ -88,7 +110,7 @@ public class CellTable extends CellLangType<List<CellLangType>>{
         }});
         this.columns = columns;
         this.rows = new CellList( super.getValue().subList(1, super.getValue().size()));
-        uniqueTableId =  tableId++;
+        uniqueTableId =  globalTableId++;
         /// TABLE OF THE FORM [ ["Col1", "Col2"], [row1],[row2] ]
     }
 
@@ -1414,6 +1436,9 @@ public class CellTable extends CellLangType<List<CellLangType>>{
     {
         return uniqueTableId;
     }
+
+
+   
     
     public CellTable applySum() {
         // [[],[]]
