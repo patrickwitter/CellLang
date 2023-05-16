@@ -70,8 +70,39 @@ public enum Cmp {
 			return new CellBoolean(null);
 		}	
 	}
-    };
+	
+    },
     
+	AND("and") {
+		public CellLangType apply(CellLangType arg1, CellLangType arg2) {
+			try {
+				return  arg1.and(arg2);
+			} catch (TypeException e) {
+			
+				e.printStackTrace();
+				return new CellBoolean(null);
+			}	
+		}
+		
+		},
+
+	OR("or") {
+			public CellLangType apply(CellLangType arg1, CellLangType arg2) {
+				try {
+					return  arg1.or(arg2);
+				} catch (TypeException e) {
+				
+					e.printStackTrace();
+					return new CellBoolean(null);
+				}	
+			}
+			
+			},
+		
+		
+		
+		;
+
 
     private String symbol;
 

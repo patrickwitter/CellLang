@@ -1469,6 +1469,194 @@ public class CellTable extends CellLangType<List<CellLangType>>{
         CellTable outputTable = new CellTable(this.getColumns(), new CellList(newRows)); // creating a new CellTable with the sums
         return outputTable;
     }
+
+    // And operation between CellTable and a Constant 
+    CellTable andConst(CellLangType v) throws TypeException
+    {
+        if (v instanceof CellInteger || v instanceof CellDouble)
+        {
+            /// Add each element of the table  to the constant
+
+            /// This represents the new collection of rows in the table
+            CellList newRows = new CellList();
+
+            // This is a list of lists per the constructor definition 
+            List<CellLangType> x = getRows().getValue();
+
+            
+            for (int i = 0; i < getRows().getValue().size(); i++)
+            {
+                CellList row = (CellList)x.get(i);
+
+                /// A singular row 
+                CellList newRow = new CellList();
+
+                for (CellLangType element : row.getValue()) {
+                    
+                    newRow.and(element.and(v));
+                }
+
+                newRows.add(newRow);
+            }
+
+            return new CellTable(columns, newRows);
+        }
+
+        throw new TypeException("");
+
+
+    }
+
+
+    // And operation between CellTable and a Constant 
+    CellTable orConst(CellLangType v) throws TypeException
+    {
+        if (v instanceof CellInteger || v instanceof CellDouble || v instanceof CellBoolean)
+        {
+            /// Add each element of the table  to the constant
+
+            /// This represents the new collection of rows in the table
+            CellList newRows = new CellList();
+
+            // This is a list of lists per the constructor definition 
+            List<CellLangType> x = getRows().getValue();
+
+            
+            for (int i = 0; i < getRows().getValue().size(); i++)
+            {
+                CellList row = (CellList)x.get(i);
+
+                /// A singular row 
+                CellList newRow = new CellList();
+
+                for (CellLangType element : row.getValue()) {
+                    
+                    newRow.and(element.or(v));
+                }
+
+                newRows.add(newRow);
+            }
+
+            return new CellTable(columns, newRows);
+        }
+
+        throw new TypeException("");
+
+
+    }
+
+
+    CellTable andOrTable(CellTable v, String andOr) throws TypeException
+    {
+        boolean and =  andOr.equals("and") ? true : false;
+
+        if(v instanceof CellTable)
+        {
+            CellList newRow = new CellList();
+            CellTable tableA = this;
+            CellTable tableB= v;
+            // List<CellLangType> tableB = y.getValue();
+
+            /// TABLES ARE OF THE FORM 
+            /*
+             *  [ ["Col1","Col2"],[row1],[row2]]
+             * 
+             */
+            /// We add each element of each row:  first row ; first element of T1 PLUS first row ; first element of T2
+            /// and so on
+            
+            /// Check the number of columns in each table
+            ///  The table with the greater column will be the upper bound on how many inner row additions we do 
+            /// An inner row addition is as follows:
+            /// [1,2,3] [1,2] - The maxcol in the first list will dictate how many inner row addition additions we 
+            int maxcol =  Math.max(tableA.getColumns().getValue().size(), tableB.getColumns().getValue().size());
+
+            /// Check the number of rows in each table
+            ///  The table with the greater column will be the upper bound on how many outer  row additions we do 
+            /// An outer row addition is as follows:
+
+            /// [ ["1"], [1] , [1] , [1] ]: T1
+            /// [ ["1"], [1] , [1] ]: T2 - The maxrow in the first list will dictate how many outer row addition additions we do
+            int maxrows = Math.max(tableA.getRows().getValue().size(), tableB.getRows().getValue().size());
+
+            //TODO Account for different dimensions in tables 
+            for (int i = 0; i < maxrows; i++)
+            {   
+                /*
+                 * CellTable.getRows().getValue()
+                 * 
+                 * Returns a List of List as per the defintion in the constructor
+                 * 
+                 */
+
+            //    CellList tableARow = (CellList)tableA.getRows().getValue().get(i);
+            //    CellList tableBRow = (CellList)tableB.getRows().getValue().get(i);
+
+                
+                CellList tableARow = i < tableA.getRows().getValue().size() ? (CellList) tableA.getRows().getValue().get(i) : new CellList();
+                CellList tableBRow = i < tableB.getRows().getValue().size() ? (CellList) tableB.getRows().getValue().get(i) : new CellList();
+               
+               CellList a = new CellList();
+               for (int j = 0; j < maxcol; j++)
+               {
+                    /// Within EXCEL EMPTY CELLS ARE TREATED AS 0 IN ARITHMETIC OPERATIONS 
+                    //a.add( tableARow.getValue().get(j).add(tableBRow.getValue().get(j)));
+                    CellLangType tableAElement = j < tableARow.getValue().size() ? tableARow.getValue().get(j) : new CellInteger(0);
+                    CellLangType tableBElement = j < tableBRow.getValue().size() ? tableBRow.getValue().get(j) : new CellInteger(0);
+
+                    if(and)
+                     a.add(tableAElement.and(tableBElement));
+                    else
+                    a.add(tableAElement.or(tableBElement));
+               }
+
+               newRow.add(a);
+            }
+
+
+            return new CellTable(this.columns, newRow);
+           
+        }
+
+        throw new TypeException("");
+
+    }
+
+
+    @Override
+    public CellLangType and(CellLangType v) throws TypeException {
+        
+        if (v instanceof CellInteger || v instanceof CellDouble || v instanceof CellBoolean)
+        {
+            return andConst(v);
+        }
+
+        if(v instanceof CellTable)
+        {
+            return andOrTable( (CellTable)v, "and");
+        }
+
+        throw new TypeException(""); 
+    }
+
+    
+    @Override
+    public CellLangType or(CellLangType v) throws TypeException {
+        
+        if (v instanceof CellInteger || v instanceof CellDouble || v instanceof CellBoolean)
+        {
+            return orConst(v);
+        }
+
+        if(v instanceof CellTable)
+        {
+            return andOrTable( (CellTable)v, "or");
+        }
+
+        throw new TypeException(""); 
+    }
+
+
     
     
     

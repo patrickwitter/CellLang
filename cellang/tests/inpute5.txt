@@ -1,12 +1,22 @@
 println("----TESTING IMPORT FOR STATIC TABLES");
-out("C:\\Users\\Pwitt\\Documents\\Capstone\\outpute5.xlsx","TestSheet");
+out("C:\\Users\\Pwitt\\Documents\\Capstone\\outputu5.xlsx","TestSheet");
 
-import "C:\\Users\\Pwitt\\Documents\\Capstone\\outpute1Map.txt";
+import "C:\\Users\\Pwitt\\Documents\\Capstone\\outpute2Map.txt";
 
 println("--TESTING IMPORT of CELLTABLE");
-println(@1);
-y = @1 + 5;
 
-println(y);
+println("Printing Table 1");
+println(@0);
+
+println("Printing Table 2");
+println(@1);
+
+println("Printing Table 3");
+println(@2);
+
+//println("");
+y = @2 + 100;
+
+//println(y);
 
 closeOut();

@@ -153,6 +153,28 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 	CellLangType val1, val2;
 	val1 = exp.getExpL().visit(this, env);
 	val2 = exp.getExpR().visit(this, env);
+
+	if(outCalled)
+	{
+		// System.out.println("Out ADD");
+		// Check if atleast one of the expressions is an ExpTable 
+		
+
+		if(val1 instanceof CellTable || val2 instanceof CellTable)
+		{
+			if(val1 instanceof CellTable)
+			{
+				toExcel.subTables((CellTable) val1 , val2);
+			}
+
+			else
+			{
+				toExcel.subTables((CellTable) val2 , val1);
+			}
+			// System.out.println("Adding Tables to Excel");
+			
+		}
+	}
 	return val1.sub(val2);
     }
 
@@ -162,6 +184,29 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 	CellLangType val1, val2;
 	val1 = exp.getExpL().visit(this, env);
 	val2 = exp.getExpR().visit(this, env);
+
+	if(outCalled)
+	{
+		// System.out.println("Out ADD");
+		// Check if atleast one of the expressions is an ExpTable 
+		
+
+		if(val1 instanceof CellTable || val2 instanceof CellTable)
+		{
+			if(val1 instanceof CellTable)
+			{
+				toExcel.mulTables((CellTable) val1 , val2);
+			}
+
+			else
+			{
+				toExcel.mulTables((CellTable) val2 , val1);
+			}
+			// System.out.println("Adding Tables to Excel");
+			
+		}
+	}
+
 	return val1.mul(val2);
     }
 
@@ -169,8 +214,33 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
     public CellLangType visitExpDiv(ExpDiv exp, Environment<CellLangType> env)
 	throws VisitException {
 	CellLangType val1, val2;
+
+	
 	val1 = exp.getExpL().visit(this, env);
 	val2 = exp.getExpR().visit(this, env);
+
+
+	if(outCalled)
+	{
+		// System.out.println("Out ADD");
+		// Check if atleast one of the expressions is an ExpTable 
+		
+
+		if(val1 instanceof CellTable || val2 instanceof CellTable)
+		{
+			if(val1 instanceof CellTable)
+			{
+				toExcel.divTables((CellTable) val1 , val2);
+			}
+
+			else
+			{
+				toExcel.divTables((CellTable) val2 , val1);
+			}
+			// System.out.println("Adding Tables to Excel");
+			
+		}
+	}
 	return val1.div(val2);
     }
 

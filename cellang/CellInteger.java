@@ -218,6 +218,68 @@ public class CellInteger extends CellLangType<Integer>{
 	}
 
 	@Override
+	public CellLangType and(CellLangType v) throws TypeException {
+		
+		if(v instanceof CellInteger)
+		{	
+			if(this.getValue() == 0 || ((CellInteger)v).getValue() == 0)
+			{
+				return new  CellBoolean(false);
+			}
+			return new CellBoolean(true);
+		}
+		
+		if (v instanceof CellDouble)
+		{	
+			
+			if( (double)this.getValue() <= 0 || ((CellDouble)v).getValue() <= 0)
+			{
+				return new  CellBoolean(false);
+			}
+			return new CellBoolean(true);
+		}
+
+		if (v instanceof CellTable)
+		{
+			return ((CellTable)v).andConst(this);
+		}
+
+		throw new TypeException("AND unsupported for String and  object of class: " + v.getClass().getSimpleName());
+	}
+
+
+	@Override
+	public CellLangType or(CellLangType v) throws TypeException {
+		
+		if(v instanceof CellInteger)
+		{	
+			if(this.getValue() == 0 && ((CellInteger)v).getValue() == 0)
+			{
+				return new  CellBoolean(false);
+			}
+			return new CellBoolean(true);
+		}
+		
+		if (v instanceof CellDouble)
+		{	
+			
+			if( (double)this.getValue() <= 0 && ((CellDouble)v).getValue() <= 0)
+			{
+				return new  CellBoolean(false);
+			}
+			return new CellBoolean(true);
+		}
+
+		if (v instanceof CellTable)
+		{
+			return ((CellTable)v).orConst(this);
+		}
+
+		throw new TypeException("AND unsupported for String and  object of class: " + v.getClass().getSimpleName());
+	}
+
+
+	@Override
 	public String toString() {
 		return getValue().toString();
 	}

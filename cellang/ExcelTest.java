@@ -309,6 +309,7 @@ public class ExcelTest {
         Workbook workbook = getWorkbook();
         Sheet sheet = getSheet(workbook);
         
+
         if(t instanceof CellTable)
         {
             CellTable table2 = (CellTable) t;
@@ -422,6 +423,7 @@ public class ExcelTest {
 
                     String formula = "SUM("+cellT1Address+","+cellT2Address+")";
                     rowEntry.add(new CellString(formula));
+                    System.out.println(rowEntry);
                 }
 
                 result.addRow(rowEntry);
@@ -517,6 +519,233 @@ public class ExcelTest {
 
                     System.out.println("CONSTANT ADDRESS "+constantAddress);
                     String formula = "SUM("+cellT1Address+","+"$"+constantAddress.charAt(0)+"$"+constantAddress.charAt(1)+")";
+                    //String formula = cellT1Address+"+"+constantAddress.charAt(0)+"$"+constantAddress.charAt(1)
+                    rowEntry.add(new CellString(formula));
+                }
+
+                result.addRow(rowEntry);
+            }
+        
+            CreateFormulaTable(result);
+        }
+        
+    }
+
+//-------------------------SUBTABLES 
+    public void subTables(CellTable table1, CellLangType t) {
+        Workbook workbook = getWorkbook();
+        Sheet sheet = getSheet(workbook);
+        
+        if(t instanceof CellTable)
+        {
+            CellTable table2 = (CellTable) t;
+            // System.out.println(table1);
+
+            // System.out.println(table2);
+
+            // Checking if both tables are present
+            String tableId1 = Integer.toString(table1.getId());
+            String tableId2 = Integer.toString(table2.getId());
+            
+            // System.out.println("TABLE 1 ID: "+tableId1 + " TABLE 2 ID: "+tableId2);
+            // If any table is not present, write it to Excel 
+            // And put it to mapping 
+            if (!isTablePresent(tableId1)) {
+                CreateStaticTable(table1);
+            }
+            if (!isTablePresent(tableId2)) {
+                CreateStaticTable(table2);
+            }
+        
+            // Getting coordinates of both tables
+            ArrayList<ArrayList<Integer>> table1Cord = getTableCordValue(tableId1);
+            ArrayList<ArrayList<Integer>> table2Cord = getTableCordValue(tableId2);
+
+            // System.out.println("COORDINATES ADD T1CORD "+ table1Cord + "\n T2CORD " + table2Cord);
+
+            // Getting the number of Content rows in both tables 
+            int numCRowsTable1 = getNumContentRows(table1Cord);
+            int numCRowsTable2 = getNumContentRows(table2Cord);
+
+            // Getting the number of columns in both tables 
+            int numColsTable1 = getNumColumns(table1Cord);
+            int numColsTable2 = getNumColumns(table2Cord);
+
+            //Getting the upperbound of column and row of each table
+            int maxRows = Math.max(numCRowsTable1,numCRowsTable2);
+            int maxCols = Math.max(numColsTable1,numColsTable2);
+            
+            // /// Points to the row of the each table 
+            // int table1RowPointer = 0;
+            // int table2RowPointer = 0;
+
+            //  /// Points to the column of the each table 
+            //  int table1ColPointer = 0;
+            //  int table2ColPointer = 0;
+
+            CellTable result =  new CellTable(new CellList());
+            CellList colNms =  new CellList();
+            /// Iterate through the longest table and create a table with columnsT1 "+" columnsT2 
+
+            // System.out.println("TABLE1 COLUMN"+table1.getColumns().getValue().toString());
+            // System.out.println("TABLE1 COLUMN"+table1.getColumns().getValue().toString());
+            for (int i = 0; i < maxCols; i++ )
+            {
+                String ColT1Nm = i < numColsTable1 ?  table1.getColumns().getValue().get(i).toString() : "";
+                String ColT2Nm = i < numColsTable2 ?  table2.getColumns().getValue().get(i).toString() : "";
+
+                colNms.add(new CellString(ColT1Nm+"-"+ColT2Nm));
+            }
+            
+            result.addColumn(colNms);
+
+            /// Going through the maximum rows 
+            for (int row = 0; row < maxRows; row++) {
+
+                CellList rowEntry = new CellList();
+                Row currentRow = sheet.getRow(row + 1); // Column Headers are in row 0
+
+                if (currentRow == null) {
+                    currentRow = sheet.createRow(row + 1);
+                }
+
+                for (int col = 0; col < maxCols; col++) {
+
+                    
+                    //BUG Row assumed to starts at row 1 Doesn't account for movement of rows 
+
+                    // If the currentRow is greater than the
+                    // We cannot get the cell outright because it might reference a cell in another table 
+                    // We return null instead
+                    Cell cellT1  = currentRow.getRowNum() <= numCRowsTable1 && col < numColsTable1 ? currentRow.getCell(col + getColumnStart(table1Cord)) : null;
+                    Cell cellT2 =  currentRow.getRowNum() <= numCRowsTable2 && col < numColsTable2 ? currentRow.getCell(col + getColumnStart(table2Cord)) : null;
+
+                
+                
+
+                    // If out of bounds Celladdress should be a literal 0 otherwise get the cellAddress 
+                    String cellT1Address;
+                    String cellT2Address;
+                    if(cellT1 == null)
+                    {   
+                        System.out.println("CELL TABLE 1 NULL");
+                        cellT1Address = "0";
+                    }
+                    else{
+                        System.out.println("CELL TABLE 1 | " + cellT1.getRowIndex() + " " + cellT1.getColumnIndex());
+
+                        cellT1Address = new CellReference(cellT1.getRowIndex(), cellT1.getColumnIndex()).formatAsString();
+                    }
+
+                    if(cellT2 == null)
+                    {
+                        System.out.println("CELL TABLE 2 NULL");
+                        cellT2Address = "0";
+                    }
+                    else{
+                        System.out.println("CELL TABLE 2 | " + cellT2.getRowIndex() + " " + cellT2.getColumnIndex());
+                        cellT2Address = new CellReference(cellT2.getRowIndex(), cellT2.getColumnIndex()).formatAsString();
+                    }
+
+                    String formula = cellT1Address + "-" +cellT2Address;
+                    rowEntry.add(new CellString(formula));
+                    System.out.println(rowEntry);
+                }
+
+                result.addRow(rowEntry);
+            }
+        
+            CreateFormulaTable(result);
+        }
+//---------------------- TODO ADDING SCALARS
+        else 
+        {
+            System.out.println("---------ADDING SCALAR TO TABLE SCLALR "+t.toString() );
+            //Create A table for the scalar called Contstant 
+            CellList colConst = new CellList(new ArrayList<>(List.of(new CellString("Constant"))));
+            
+            CellList rowConst = new CellList();
+            CellList rowE = new CellList();
+            rowE.add(t);
+
+            rowConst.add(rowE);
+
+            System.out.println("---CONSTANNT ROW "+rowConst);
+
+            CellTable constant = new CellTable(colConst,new CellList(rowConst.getValue()));
+            CreateStaticTable(constant);
+
+            String tableId1 = Integer.toString(table1.getId());
+            String constantId = Integer.toString(constant.getId());
+
+            //IF Table not present create it 
+            if (!isTablePresent(tableId1)) {
+                CreateStaticTable(table1);
+            }
+        
+            // Getting coordinates of both tables
+            ArrayList<ArrayList<Integer>> table1Cord = getTableCordValue(tableId1);
+            ArrayList<ArrayList<Integer>> constantCord = getTableCordValue(constantId);
+            // Iterate over the row ,column of table and add the constant 
+
+            int numCRowsTable1 = getNumContentRows(table1Cord);
+
+            int numColsTable1 = getNumColumns(table1Cord);
+
+            CellTable result =  new CellTable(new CellList());
+
+            // Let the columns remain the same 
+            result.addColumn(table1.getColumns());
+            
+            Row constantRow = sheet.getRow(1);
+            /// Going through the rows of table1 since the constant will be absolute
+            for (int row = 0; row < numCRowsTable1; row++) {
+
+                CellList rowEntry = new CellList();
+                Row currentRow = sheet.getRow(row + 1); // Column Headers are in row 0
+
+                if (currentRow == null) {
+                    currentRow = sheet.createRow(row + 1);
+                }
+                /// Going through the rows of table1 since the constant will be absolute
+                for (int col = 0; col < numColsTable1; col++) {
+
+                    
+                    Cell cellT1  =  currentRow.getCell(col + getColumnStart(table1Cord));
+
+                    //COnstant is 
+                    Cell cellConstant =  constantRow.getCell(getColumnStart(constantCord));
+
+                
+                
+
+                    // If out of bounds Celladdress should be a literal 0 otherwise get the cellAddress 
+                    String cellT1Address;
+                    String constantAddress;
+                    if(cellT1 == null)
+                    {   
+                        System.out.println("CELL TABLE 1 NULL");
+                        cellT1Address = "0";
+                    }
+                    else{
+                        System.out.println("CELL TABLE 1 | " + cellT1.getRowIndex() + " " + cellT1.getColumnIndex());
+
+                        cellT1Address = new CellReference(cellT1.getRowIndex(), cellT1.getColumnIndex()).formatAsString();
+                    }
+
+                    if(cellConstant == null)
+                    {
+                        System.out.println("CELL TABLE 2 NULL");
+                        constantAddress = "0";
+                    }
+                    else{
+                        System.out.println("CELL TABLE 2 | " + cellConstant.getRowIndex() + " " + cellConstant.getColumnIndex());
+                        constantAddress = new CellReference(cellConstant.getRowIndex(), cellConstant.getColumnIndex()).formatAsString();
+                    }
+
+                    System.out.println("CONSTANT ADDRESS "+constantAddress);
+                    String formula = cellT1Address+"-"+"$"+constantAddress.charAt(0)+"$"+constantAddress.charAt(1);
+                    //String formula = cellT1Address+"+"+constantAddress.charAt(0)+"$"+constantAddress.charAt(1)
                     rowEntry.add(new CellString(formula));
                 }
 
@@ -529,6 +758,460 @@ public class ExcelTest {
     }
 
 
+//---------------------MULTABLES 
+
+    public void mulTables(CellTable table1, CellLangType t) {
+        Workbook workbook = getWorkbook();
+        Sheet sheet = getSheet(workbook);
+        
+        if(t instanceof CellTable)
+        {
+            CellTable table2 = (CellTable) t;
+            // System.out.println(table1);
+
+            // System.out.println(table2);
+
+            // Checking if both tables are present
+            String tableId1 = Integer.toString(table1.getId());
+            String tableId2 = Integer.toString(table2.getId());
+            
+            // System.out.println("TABLE 1 ID: "+tableId1 + " TABLE 2 ID: "+tableId2);
+            // If any table is not present, write it to Excel 
+            // And put it to mapping 
+            if (!isTablePresent(tableId1)) {
+                CreateStaticTable(table1);
+            }
+            if (!isTablePresent(tableId2)) {
+                CreateStaticTable(table2);
+            }
+        
+            // Getting coordinates of both tables
+            ArrayList<ArrayList<Integer>> table1Cord = getTableCordValue(tableId1);
+            ArrayList<ArrayList<Integer>> table2Cord = getTableCordValue(tableId2);
+
+            // System.out.println("COORDINATES ADD T1CORD "+ table1Cord + "\n T2CORD " + table2Cord);
+
+            // Getting the number of Content rows in both tables 
+            int numCRowsTable1 = getNumContentRows(table1Cord);
+            int numCRowsTable2 = getNumContentRows(table2Cord);
+
+            // Getting the number of columns in both tables 
+            int numColsTable1 = getNumColumns(table1Cord);
+            int numColsTable2 = getNumColumns(table2Cord);
+
+            //Getting the upperbound of column and row of each table
+            int maxRows = Math.max(numCRowsTable1,numCRowsTable2);
+            int maxCols = Math.max(numColsTable1,numColsTable2);
+            
+            // /// Points to the row of the each table 
+            // int table1RowPointer = 0;
+            // int table2RowPointer = 0;
+
+            //  /// Points to the column of the each table 
+            //  int table1ColPointer = 0;
+            //  int table2ColPointer = 0;
+
+            CellTable result =  new CellTable(new CellList());
+            CellList colNms =  new CellList();
+            /// Iterate through the longest table and create a table with columnsT1 "+" columnsT2 
+
+            // System.out.println("TABLE1 COLUMN"+table1.getColumns().getValue().toString());
+            // System.out.println("TABLE1 COLUMN"+table1.getColumns().getValue().toString());
+            for (int i = 0; i < maxCols; i++ )
+            {
+                String ColT1Nm = i < numColsTable1 ?  table1.getColumns().getValue().get(i).toString() : "";
+                String ColT2Nm = i < numColsTable2 ?  table2.getColumns().getValue().get(i).toString() : "";
+
+                colNms.add(new CellString(ColT1Nm+"*"+ColT2Nm));
+            }
+            
+            result.addColumn(colNms);
+
+            /// Going through the maximum rows 
+            for (int row = 0; row < maxRows; row++) {
+
+                CellList rowEntry = new CellList();
+                Row currentRow = sheet.getRow(row + 1); // Column Headers are in row 0
+
+                if (currentRow == null) {
+                    currentRow = sheet.createRow(row + 1);
+                }
+
+                for (int col = 0; col < maxCols; col++) {
+
+                    
+                    //BUG Row assumed to starts at row 1 Doesn't account for movement of rows 
+
+                    // If the currentRow is greater than the
+                    // We cannot get the cell outright because it might reference a cell in another table 
+                    // We return null instead
+                    Cell cellT1  = currentRow.getRowNum() <= numCRowsTable1 && col < numColsTable1 ? currentRow.getCell(col + getColumnStart(table1Cord)) : null;
+                    Cell cellT2 =  currentRow.getRowNum() <= numCRowsTable2 && col < numColsTable2 ? currentRow.getCell(col + getColumnStart(table2Cord)) : null;
+
+                
+                
+
+                    // If out of bounds Celladdress should be a literal 0 otherwise get the cellAddress 
+                    String cellT1Address;
+                    String cellT2Address;
+                    if(cellT1 == null)
+                    {   
+                        System.out.println("CELL TABLE 1 NULL");
+                        cellT1Address = "0";
+                    }
+                    else{
+                        System.out.println("CELL TABLE 1 | " + cellT1.getRowIndex() + " " + cellT1.getColumnIndex());
+
+                        cellT1Address = new CellReference(cellT1.getRowIndex(), cellT1.getColumnIndex()).formatAsString();
+                    }
+
+                    if(cellT2 == null)
+                    {
+                        System.out.println("CELL TABLE 2 NULL");
+                        cellT2Address = "0";
+                    }
+                    else{
+                        System.out.println("CELL TABLE 2 | " + cellT2.getRowIndex() + " " + cellT2.getColumnIndex());
+                        cellT2Address = new CellReference(cellT2.getRowIndex(), cellT2.getColumnIndex()).formatAsString();
+                    }
+
+                    String formula = cellT1Address + "*" +cellT2Address;
+                    rowEntry.add(new CellString(formula));
+                    System.out.println(rowEntry);
+                }
+
+                result.addRow(rowEntry);
+            }
+        
+            CreateFormulaTable(result);
+        }
+//---------------------- TODO ADDING SCALARS
+        else 
+        {
+            System.out.println("---------ADDING SCALAR TO TABLE SCLALR "+t.toString() );
+            //Create A table for the scalar called Contstant 
+            CellList colConst = new CellList(new ArrayList<>(List.of(new CellString("Constant"))));
+            
+            CellList rowConst = new CellList();
+            CellList rowE = new CellList();
+            rowE.add(t);
+
+            rowConst.add(rowE);
+
+            System.out.println("---CONSTANNT ROW "+rowConst);
+
+            CellTable constant = new CellTable(colConst,new CellList(rowConst.getValue()));
+            CreateStaticTable(constant);
+
+            String tableId1 = Integer.toString(table1.getId());
+            String constantId = Integer.toString(constant.getId());
+
+            //IF Table not present create it 
+            if (!isTablePresent(tableId1)) {
+                CreateStaticTable(table1);
+            }
+        
+            // Getting coordinates of both tables
+            ArrayList<ArrayList<Integer>> table1Cord = getTableCordValue(tableId1);
+            ArrayList<ArrayList<Integer>> constantCord = getTableCordValue(constantId);
+            // Iterate over the row ,column of table and add the constant 
+
+            int numCRowsTable1 = getNumContentRows(table1Cord);
+
+            int numColsTable1 = getNumColumns(table1Cord);
+
+            CellTable result =  new CellTable(new CellList());
+
+            // Let the columns remain the same 
+            result.addColumn(table1.getColumns());
+            
+            Row constantRow = sheet.getRow(1);
+            /// Going through the rows of table1 since the constant will be absolute
+            for (int row = 0; row < numCRowsTable1; row++) {
+
+                CellList rowEntry = new CellList();
+                Row currentRow = sheet.getRow(row + 1); // Column Headers are in row 0
+
+                if (currentRow == null) {
+                    currentRow = sheet.createRow(row + 1);
+                }
+                /// Going through the rows of table1 since the constant will be absolute
+                for (int col = 0; col < numColsTable1; col++) {
+
+                    
+                    Cell cellT1  =  currentRow.getCell(col + getColumnStart(table1Cord));
+
+                    //COnstant is 
+                    Cell cellConstant =  constantRow.getCell(getColumnStart(constantCord));
+
+                
+                
+
+                    // If out of bounds Celladdress should be a literal 0 otherwise get the cellAddress 
+                    String cellT1Address;
+                    String constantAddress;
+                    if(cellT1 == null)
+                    {   
+                        System.out.println("CELL TABLE 1 NULL");
+                        cellT1Address = "0";
+                    }
+                    else{
+                        System.out.println("CELL TABLE 1 | " + cellT1.getRowIndex() + " " + cellT1.getColumnIndex());
+
+                        cellT1Address = new CellReference(cellT1.getRowIndex(), cellT1.getColumnIndex()).formatAsString();
+                    }
+
+                    if(cellConstant == null)
+                    {
+                        System.out.println("CELL TABLE 2 NULL");
+                        constantAddress = "0";
+                    }
+                    else{
+                        System.out.println("CELL TABLE 2 | " + cellConstant.getRowIndex() + " " + cellConstant.getColumnIndex());
+                        constantAddress = new CellReference(cellConstant.getRowIndex(), cellConstant.getColumnIndex()).formatAsString();
+                    }
+
+                    System.out.println("CONSTANT ADDRESS "+constantAddress);
+                    String formula = cellT1Address+ "*" +"$"+constantAddress.charAt(0)+"$"+constantAddress.charAt(1);
+                    rowEntry.add(new CellString(formula));
+                }
+
+                result.addRow(rowEntry);
+            }
+        
+            CreateFormulaTable(result);
+        }
+        
+    }
+
+
+
+    public void divTables(CellTable table1, CellLangType t) {
+        Workbook workbook = getWorkbook();
+        Sheet sheet = getSheet(workbook);
+        
+        if(t instanceof CellTable)
+        {
+            CellTable table2 = (CellTable) t;
+            // System.out.println(table1);
+
+            // System.out.println(table2);
+
+            // Checking if both tables are present
+            String tableId1 = Integer.toString(table1.getId());
+            String tableId2 = Integer.toString(table2.getId());
+            
+            // System.out.println("TABLE 1 ID: "+tableId1 + " TABLE 2 ID: "+tableId2);
+            // If any table is not present, write it to Excel 
+            // And put it to mapping 
+            if (!isTablePresent(tableId1)) {
+                CreateStaticTable(table1);
+            }
+            if (!isTablePresent(tableId2)) {
+                CreateStaticTable(table2);
+            }
+        
+            // Getting coordinates of both tables
+            ArrayList<ArrayList<Integer>> table1Cord = getTableCordValue(tableId1);
+            ArrayList<ArrayList<Integer>> table2Cord = getTableCordValue(tableId2);
+
+            // System.out.println("COORDINATES ADD T1CORD "+ table1Cord + "\n T2CORD " + table2Cord);
+
+            // Getting the number of Content rows in both tables 
+            int numCRowsTable1 = getNumContentRows(table1Cord);
+            int numCRowsTable2 = getNumContentRows(table2Cord);
+
+            // Getting the number of columns in both tables 
+            int numColsTable1 = getNumColumns(table1Cord);
+            int numColsTable2 = getNumColumns(table2Cord);
+
+            //Getting the upperbound of column and row of each table
+            int maxRows = Math.max(numCRowsTable1,numCRowsTable2);
+            int maxCols = Math.max(numColsTable1,numColsTable2);
+            
+            // /// Points to the row of the each table 
+            // int table1RowPointer = 0;
+            // int table2RowPointer = 0;
+
+            //  /// Points to the column of the each table 
+            //  int table1ColPointer = 0;
+            //  int table2ColPointer = 0;
+
+            CellTable result =  new CellTable(new CellList());
+            CellList colNms =  new CellList();
+            /// Iterate through the longest table and create a table with columnsT1 "+" columnsT2 
+
+            // System.out.println("TABLE1 COLUMN"+table1.getColumns().getValue().toString());
+            // System.out.println("TABLE1 COLUMN"+table1.getColumns().getValue().toString());
+            for (int i = 0; i < maxCols; i++ )
+            {
+                String ColT1Nm = i < numColsTable1 ?  table1.getColumns().getValue().get(i).toString() : "";
+                String ColT2Nm = i < numColsTable2 ?  table2.getColumns().getValue().get(i).toString() : "";
+
+                colNms.add(new CellString(ColT1Nm+"/"+ColT2Nm));
+            }
+            
+            result.addColumn(colNms);
+
+            /// Going through the maximum rows 
+            for (int row = 0; row < maxRows; row++) {
+
+                CellList rowEntry = new CellList();
+                Row currentRow = sheet.getRow(row + 1); // Column Headers are in row 0
+
+                if (currentRow == null) {
+                    currentRow = sheet.createRow(row + 1);
+                }
+
+                for (int col = 0; col < maxCols; col++) {
+
+                    
+                    //BUG Row assumed to starts at row 1 Doesn't account for movement of rows 
+
+                    // If the currentRow is greater than the
+                    // We cannot get the cell outright because it might reference a cell in another table 
+                    // We return null instead
+                    Cell cellT1  = currentRow.getRowNum() <= numCRowsTable1 && col < numColsTable1 ? currentRow.getCell(col + getColumnStart(table1Cord)) : null;
+                    Cell cellT2 =  currentRow.getRowNum() <= numCRowsTable2 && col < numColsTable2 ? currentRow.getCell(col + getColumnStart(table2Cord)) : null;
+
+                
+                
+
+                    // If out of bounds Celladdress should be a literal 0 otherwise get the cellAddress 
+                    String cellT1Address;
+                    String cellT2Address;
+                    if(cellT1 == null)
+                    {   
+                        System.out.println("CELL TABLE 1 NULL");
+                        cellT1Address = "0";
+                    }
+                    else{
+                        System.out.println("CELL TABLE 1 | " + cellT1.getRowIndex() + " " + cellT1.getColumnIndex());
+
+                        cellT1Address = new CellReference(cellT1.getRowIndex(), cellT1.getColumnIndex()).formatAsString();
+                    }
+
+                    if(cellT2 == null)
+                    {
+                        System.out.println("CELL TABLE 2 NULL");
+                        cellT2Address = "0";
+                    }
+                    else{
+                        System.out.println("CELL TABLE 2 | " + cellT2.getRowIndex() + " " + cellT2.getColumnIndex());
+                        cellT2Address = new CellReference(cellT2.getRowIndex(), cellT2.getColumnIndex()).formatAsString();
+                    }
+
+                    String formula = cellT1Address + "/" +cellT2Address;
+                    rowEntry.add(new CellString(formula));
+                    System.out.println(rowEntry);
+                }
+
+                result.addRow(rowEntry);
+            }
+        
+            CreateFormulaTable(result);
+        }
+//---------------------- TODO ADDING SCALARS
+        else 
+        {
+            System.out.println("---------ADDING SCALAR TO TABLE SCLALR "+t.toString() );
+            //Create A table for the scalar called Contstant 
+            CellList colConst = new CellList(new ArrayList<>(List.of(new CellString("Constant"))));
+            
+            CellList rowConst = new CellList();
+            CellList rowE = new CellList();
+            rowE.add(t);
+
+            rowConst.add(rowE);
+
+            System.out.println("---CONSTANNT ROW "+rowConst);
+
+            CellTable constant = new CellTable(colConst,new CellList(rowConst.getValue()));
+            CreateStaticTable(constant);
+
+            String tableId1 = Integer.toString(table1.getId());
+            String constantId = Integer.toString(constant.getId());
+
+            //IF Table not present create it 
+            if (!isTablePresent(tableId1)) {
+                CreateStaticTable(table1);
+            }
+        
+            // Getting coordinates of both tables
+            ArrayList<ArrayList<Integer>> table1Cord = getTableCordValue(tableId1);
+            ArrayList<ArrayList<Integer>> constantCord = getTableCordValue(constantId);
+            // Iterate over the row ,column of table and add the constant 
+
+            int numCRowsTable1 = getNumContentRows(table1Cord);
+
+            int numColsTable1 = getNumColumns(table1Cord);
+
+            CellTable result =  new CellTable(new CellList());
+
+            // Let the columns remain the same 
+            result.addColumn(table1.getColumns());
+            
+            Row constantRow = sheet.getRow(1);
+            /// Going through the rows of table1 since the constant will be absolute
+            for (int row = 0; row < numCRowsTable1; row++) {
+
+                CellList rowEntry = new CellList();
+                Row currentRow = sheet.getRow(row + 1); // Column Headers are in row 0
+
+                if (currentRow == null) {
+                    currentRow = sheet.createRow(row + 1);
+                }
+                /// Going through the rows of table1 since the constant will be absolute
+                for (int col = 0; col < numColsTable1; col++) {
+
+                    
+                    Cell cellT1  =  currentRow.getCell(col + getColumnStart(table1Cord));
+
+                    //COnstant is 
+                    Cell cellConstant =  constantRow.getCell(getColumnStart(constantCord));
+
+                
+                
+
+                    // If out of bounds Celladdress should be a literal 0 otherwise get the cellAddress 
+                    String cellT1Address;
+                    String constantAddress;
+                    if(cellT1 == null)
+                    {   
+                        System.out.println("CELL TABLE 1 NULL");
+                        cellT1Address = "0";
+                    }
+                    else{
+                        System.out.println("CELL TABLE 1 | " + cellT1.getRowIndex() + " " + cellT1.getColumnIndex());
+
+                        cellT1Address = new CellReference(cellT1.getRowIndex(), cellT1.getColumnIndex()).formatAsString();
+                    }
+
+                    if(cellConstant == null)
+                    {
+                        System.out.println("CELL TABLE 2 NULL");
+                        constantAddress = "0";
+                    }
+                    else{
+                        System.out.println("CELL TABLE 2 | " + cellConstant.getRowIndex() + " " + cellConstant.getColumnIndex());
+                        constantAddress = new CellReference(cellConstant.getRowIndex(), cellConstant.getColumnIndex()).formatAsString();
+                    }
+
+                    System.out.println("CONSTANT ADDRESS "+constantAddress);
+                    String formula = cellT1Address+ "/" +"$"+constantAddress.charAt(0)+"$"+constantAddress.charAt(1);
+                    rowEntry.add(new CellString(formula));
+                }
+
+                result.addRow(rowEntry);
+            }
+        
+            CreateFormulaTable(result);
+        }
+        
+    }
+
+
+    
     /**
      * This method writes all changes to the workbook.
      * @pre Workbook has been created

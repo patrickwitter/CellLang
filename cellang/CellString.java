@@ -4,7 +4,19 @@ public class CellString extends CellLangType<String>{
 		super(value);
 	}
 
-	//TODO DO Boolean operations
+	@Override
+	public CellLangType mul(CellLangType v) throws TypeException {
+		
+		if(v instanceof CellInteger)
+		{
+			CellInteger repeat = (CellInteger) v;
+			return new CellString( this.getValue().repeat(repeat.getValue()));
+		}
+
+		throw new TypeException("Multiplication unsupported for String and  object of class: " + v.getClass().getSimpleName());
+	}
+
+
 
 	@Override
 	public CellLangType notEqual(CellLangType v) throws TypeException {
@@ -25,6 +37,8 @@ public class CellString extends CellLangType<String>{
 
 		throw new TypeException();
 	}
+
+	
 
 	@Override
 	public String toString() {

@@ -94,7 +94,7 @@ NOTE:
 <YYINITIAL> "closeOut" {return new Symbol(sym.CLOSEOUT);}
 <YYINITIAL> "import" {return new Symbol(sym.IMPORT);}
 <YYINITIAL> "@"{alphanum}+ {return new Symbol(sym.MAPVAR,yytext());}
-
+<YYINITIAL> "$" {return new Symbol(sym.DOLLAR);}
 //<YYINITIAL> "mut" {return new Symbol(sym.MUTATE);}
 
 /// Arithmetic Symbols 
@@ -125,7 +125,7 @@ NOTE:
 <YYINITIAL> "if" {return new Symbol(sym.IF);}
 <YYINITIAL> "else" {return new Symbol(sym.ELSE);}
 <YYINITIAL> "end" {return new Symbol(sym.END);}
-//TODO MOVE TO LANG KEYWORDS
+
 <YYINITIAL> "print"     {return new Symbol(sym.PRINT);}
 <YYINITIAL> "println"   {return new Symbol(sym.PRINTLN);}
 
@@ -140,7 +140,8 @@ NOTE:
 <YYINITIAL> "!=" {return new Symbol(sym.CMP,Cmp.NE);}
 <YYINITIAL> ">" {return new Symbol(sym.CMP,Cmp.GT);}
 <YYINITIAL> ">=" {return new Symbol(sym.CMP,Cmp.GE);}
-
+<YYINITIAL> "and" {return new Symbol(sym.CMP,Cmp.AND);}
+<YYINITIAL> "or" {return new Symbol(sym.CMP,Cmp.OR);}
 /// Integers 
 <YYINITIAL>    [0-9]+ {
 	       // INTEGER

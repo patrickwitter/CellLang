@@ -50,6 +50,7 @@ terminal OUT;
 terminal CLOSEOUT;
 terminal IMPORT;
 terminal String MAPVAR;
+terminal DOLLAR;
 
 /* Terminals (tokens returned by the scanner). */
 // keywords

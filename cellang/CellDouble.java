@@ -190,6 +190,78 @@ public class CellDouble extends CellLangType<Double> {
 	}
 
 	@Override
+	public CellLangType and(CellLangType v) throws TypeException {
+		if(v instanceof CellInteger)
+		{	
+			double r1 = (Double)getValue();
+			double r2 = Double.valueOf((Integer)v.getValue());
+
+			if( r1 == 0 || ( r2 == 0))
+			{
+				return new  CellBoolean(false);
+			}
+			return new CellBoolean(true);
+		}
+		
+		if (v instanceof CellDouble)
+		{	
+					
+			double r1 = (Double)getValue();
+			double r2 = (Double)v.getValue();
+			
+			if(r1  <= 0 || r2 <= 0)
+			{
+				return new  CellBoolean(false);
+			}
+			return new CellBoolean(true);
+		}
+
+		if (v instanceof CellTable)
+		{
+			return ((CellTable)v).andConst(this);
+		}
+
+		throw new TypeException("AND unsupported for String and  object of class: " + v.getClass().getSimpleName());
+	}
+
+
+	@Override
+	public CellLangType or(CellLangType v) throws TypeException {
+		if(v instanceof CellInteger)
+		{	
+			double r1 = (Double)getValue();
+			double r2 = Double.valueOf((Integer)v.getValue());
+
+			if( r1 == 0 && r2 == 0)
+			{
+				return new  CellBoolean(false);
+			}
+			return new CellBoolean(true);
+		}
+		
+		if (v instanceof CellDouble)
+		{	
+					
+			double r1 = (Double)getValue();
+			double r2 = (Double)v.getValue();
+			
+			if(r1  <= 0 && r2 <= 0)
+			{
+				return new  CellBoolean(false);
+			}
+			return new CellBoolean(true);
+		}
+
+		if (v instanceof CellTable)
+		{
+			return ((CellTable)v).andConst(this);
+		}
+
+		throw new TypeException("AND unsupported for String and  object of class: " + v.getClass().getSimpleName());
+	}
+
+
+	@Override
 	public String toString() {
 		return getValue().toString();
 	}
