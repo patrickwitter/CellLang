@@ -62,4 +62,6 @@ public interface Visitor<S, T> {
     public T visitApplyFunction(ExpApply apply, S state) throws VisitException;
 
     public T visitExpMethodCall(ExpMethodCall expMethodCall, S arg) throws VisitException;
+
+    public T visitExpDollarVar(ExpDollar expVar, S arg) throws VisitException;;
 }

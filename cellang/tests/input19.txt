@@ -1,0 +1,10 @@
+println("Testing abs");
+out("C:\\Users\\Pwitt\\Documents\\Capstone\\outpute6.xlsx","TestSheetAbs");
+x = table(["X","Y","Z"],[[1,2,3],[4,5,6],[4,5,6]]);
+println(x);
+
+y = [10,20,30];
+$y;
+
+println(x+y);
+closeOut();

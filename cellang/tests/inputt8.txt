@@ -6,5 +6,9 @@ println(y);
 
 y.mut(Col1, if y.Col1 > 1: 20 else 30 end);
 
+println(y.Col1);
+
 println(y);
+
+
 

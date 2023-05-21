@@ -1,6 +1,10 @@
 println("----WRITING STATIC TABLE TO EXCEL");
-out("C:\\Users\\Pwitt\\Documents\\Capstone\\outpute1.xlsx","TestSheet");
-x = table(["Col1","Col2"],[[1,2],[3,4]]);
+out("C:\\Users\\Pwitt\\Documents\\Capstone\\demoe1.xlsx","TestSheet2");
+x = table(["Col1","Col2"],[ [1,2] ,[3,4]]);
 y = table(["Col1Y","Col2Y"],[[5,6],[7,8]]);
 z = table(["Col1YY","Col2YY"],[[9,10],[11,12]]);
+
+// Adding Tables
+//w = x + z / y ; 
+//println(w);
 closeOut();

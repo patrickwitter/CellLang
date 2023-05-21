@@ -1,6 +1,10 @@
+out("C:\\Users\\Pwitt\\Documents\\Capstone\\outputt1.xlsx","TestSheet");
+
 x = table(["Col1","Col2"],[[1,2],[3,4]]);
 
 
 x = x.Col1; 
 
-x;
+y =  x * 1;
+
+closeOut();

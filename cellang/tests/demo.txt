@@ -1,0 +1,28 @@
+out("C:\\Users\\Pwitt\\Documents\\Capstone\\demo.xlsx","TestSheet");
+
+
+
+students = table(["Name","PS1","PS2","PS2"],200);
+
+//println(students);
+// Create denominator and weight table 
+
+den = [20,30,40];
+wght = [20,30,40];
+
+Bonus = students.PS1 + 10;
+
+$den;
+$wght;
+
+println(students.Col1);
+
+//println(x);
+//students.mut(PsTot,apply(row,sum,(students[PS1:PS3]/den)*wght));
+
+
+
+closeOut();
+
+
+

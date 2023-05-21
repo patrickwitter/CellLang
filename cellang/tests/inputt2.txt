@@ -1,5 +1,5 @@
 x = table(["Col1","Col2"],[[1,2],[3,4]]);
-println("----TESTING ARITHMETIC OPERATIONS ONSCALARS----");
+println("----TESTING ARITHMETIC OPERATIONS ON TABLE ----");
 
 println("Original x");
 println(x);
@@ -16,7 +16,7 @@ println(x / 2);
 println("x-2");
 println(x - 2);
 
-println("-------TESTING BOOLEAN OPERATIONS ONSCALARS-------");
+println("-------TESTING BOOLEAN OPERATIONS ON TABLE -------");
 
 println("Original x");
 println(x);

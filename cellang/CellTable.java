@@ -78,11 +78,11 @@ public class CellTable extends CellLangType<List<CellLangType>>{
     public CellTable(CellList columns, int numrows) throws TypeException {
        
         super(new ArrayList<CellLangType>() {{
-            CellList r = new CellList();
+            //CellList r = new CellList();
             add(columns);
             for (int i = 0; i < numrows; i++) {
                 //TODO Ineffi
-                r.add(new CellList());
+               // r.add(new CellList());
                 add(new CellList());
             }
             
@@ -185,6 +185,35 @@ public class CellTable extends CellLangType<List<CellLangType>>{
             return new CellTable(this.columns, newRow);
            
         }
+         // Check if v is a CellList
+    if(v instanceof CellList) {
+        CellList list = (CellList) v;
+        CellList newRow = new CellList();
+
+        // Iterate through each row of the table
+        for(CellLangType rowType : this.getRows().getValue()) {
+            // Check if the rowType is an instance of CellList
+            if(rowType instanceof CellList) {
+                CellList row = (CellList) rowType;
+                CellList updatedRow = new CellList();
+
+                // Iterate through each column in the row
+                for(int i = 0; i < this.getColumns().getValue().size(); i++) {
+                    // If the CellList v is shorter than the row, treat missing values as 0
+                    CellLangType listElement = i < list.getValue().size() ? list.getValue().get(i) : new CellInteger(0);
+
+                    // Add the elements of the CellList to the corresponding elements of the row
+                    updatedRow.add(row.getValue().get(i).add(listElement));
+                }
+                newRow.add(updatedRow);
+            } else {
+                throw new TypeException("Row is not an instance of CellList");
+            }
+        }
+
+        // Return a new CellTable with the same column names and the updated rows
+        return new CellTable(this.getColumns(), newRow);
+    }
 
         if (v instanceof CellInteger || v instanceof CellDouble)
         {
@@ -285,6 +314,35 @@ public class CellTable extends CellLangType<List<CellLangType>>{
             return new CellTable(this.columns, newRow);
            
         }
+                 // Check if v is a CellList
+    if(v instanceof CellList) {
+        CellList list = (CellList) v;
+        CellList newRow = new CellList();
+
+        // Iterate through each row of the table
+        for(CellLangType rowType : this.getRows().getValue()) {
+            // Check if the rowType is an instance of CellList
+            if(rowType instanceof CellList) {
+                CellList row = (CellList) rowType;
+                CellList updatedRow = new CellList();
+
+                // Iterate through each column in the row
+                for(int i = 0; i < this.getColumns().getValue().size(); i++) {
+                    // If the CellList v is shorter than the row, treat missing values as 0
+                    CellLangType listElement = i < list.getValue().size() ? list.getValue().get(i) : new CellInteger(0);
+
+                    // Add the elements of the CellList to the corresponding elements of the row
+                    updatedRow.add(row.getValue().get(i).sub(listElement));
+                }
+                newRow.add(updatedRow);
+            } else {
+                throw new TypeException("Row is not an instance of CellList");
+            }
+        }
+
+        // Return a new CellTable with the same column names and the updated rows
+        return new CellTable(this.getColumns(), newRow);
+    }
 
         if (v instanceof CellInteger || v instanceof CellDouble)
         {
@@ -387,6 +445,36 @@ public class CellTable extends CellLangType<List<CellLangType>>{
            
         }
 
+                 // Check if v is a CellList
+    if(v instanceof CellList) {
+        CellList list = (CellList) v;
+        CellList newRow = new CellList();
+
+        // Iterate through each row of the table
+        for(CellLangType rowType : this.getRows().getValue()) {
+            // Check if the rowType is an instance of CellList
+            if(rowType instanceof CellList) {
+                CellList row = (CellList) rowType;
+                CellList updatedRow = new CellList();
+
+                // Iterate through each column in the row
+                for(int i = 0; i < this.getColumns().getValue().size(); i++) {
+                    // If the CellList v is shorter than the row, treat missing values as 0
+                    CellLangType listElement = i < list.getValue().size() ? list.getValue().get(i) : new CellInteger(0);
+
+                    // Add the elements of the CellList to the corresponding elements of the row
+                    updatedRow.add(row.getValue().get(i).mul(listElement));
+                }
+                newRow.add(updatedRow);
+            } else {
+                throw new TypeException("Row is not an instance of CellList");
+            }
+        }
+
+        // Return a new CellTable with the same column names and the updated rows
+        return new CellTable(this.getColumns(), newRow);
+    }
+
         if (v instanceof CellInteger || v instanceof CellDouble)
         {
             /// Add each element of the table  to the constant
@@ -484,6 +572,36 @@ public class CellTable extends CellLangType<List<CellLangType>>{
             return new CellTable(this.columns, newRow);
            
         }
+
+                 // Check if v is a CellList
+    if(v instanceof CellList) {
+        CellList list = (CellList) v;
+        CellList newRow = new CellList();
+
+        // Iterate through each row of the table
+        for(CellLangType rowType : this.getRows().getValue()) {
+            // Check if the rowType is an instance of CellList
+            if(rowType instanceof CellList) {
+                CellList row = (CellList) rowType;
+                CellList updatedRow = new CellList();
+
+                // Iterate through each column in the row
+                for(int i = 0; i < this.getColumns().getValue().size(); i++) {
+                    // If the CellList v is shorter than the row, treat missing values as 0
+                    CellLangType listElement = i < list.getValue().size() ? list.getValue().get(i) : new CellInteger(0);
+
+                    // Add the elements of the CellList to the corresponding elements of the row
+                    updatedRow.add(row.getValue().get(i).div(listElement));
+                }
+                newRow.add(updatedRow);
+            } else {
+                throw new TypeException("Row is not an instance of CellList");
+            }
+        }
+
+        // Return a new CellTable with the same column names and the updated rows
+        return new CellTable(this.getColumns(), newRow);
+    }
 
         if (v instanceof CellInteger || v instanceof CellDouble)
         {
@@ -1205,8 +1323,8 @@ public class CellTable extends CellLangType<List<CellLangType>>{
         c.add(columnValues.getValue().get(0));
         CellList column = new CellList(c );
         CellList row = new CellList(new CellList(columnValues.getValue().subList(1, columnValues.getValue().size())).getValue());
-        // System.out.println("FROM SELECT COLOUMN ROW");
-        // System.out.println(row);
+        // //System.out.println("FROM SELECT COLOUMN ROW");
+        // //System.out.println(row);
         return new CellTable(column,row);
     }
 
@@ -1249,16 +1367,16 @@ public class CellTable extends CellLangType<List<CellLangType>>{
         }
         sb.append(columnSpace+bar+"\n");
         
-        // System.out.println("ROWLIST SHOULD BE A SINGLE LIST");
-        // System.out.println(rows.getValue());
+        // //System.out.println("ROWLIST SHOULD BE A SINGLE LIST");
+        // //System.out.println(rows.getValue());
         // Print row cell values
 
         int cellPadding =  new String(columnSpace + "-".repeat(maxColumnLength) + columnSpace).length();
 
         for (CellLangType row : rows.getValue()) {
             CellList rowList = (CellList) row;
-            // System.out.println("ROWLIST SHOULD BE A SINGLE LIST");
-            // System.out.println(rowList);
+            // //System.out.println("ROWLIST SHOULD BE A SINGLE LIST");
+            // //System.out.println(rowList);
             sb.append(bar);
             for (int i = 0; i < rowList.getValue().size(); i++) {
                 sb.append(fitStringToLength(rowList.getValue().get(i).toString(), cellPadding+4)+bar);
@@ -1295,8 +1413,8 @@ public class CellTable extends CellLangType<List<CellLangType>>{
     }
 
     public CellTable filterTable(CellTable subTable) throws TypeException {
-        // System.out.println("ORIGINAL TABLE \n" +this);
-        // System.out.println("\n----IN FILTER TABLE \n"+subTable);
+        // //System.out.println("ORIGINAL TABLE \n" +this);
+        // //System.out.println("\n----IN FILTER TABLE \n"+subTable);
         // Create a new table with the same columns as the original table
         CellTable resultTable = new CellTable(this.columns);
     
@@ -1309,16 +1427,16 @@ public class CellTable extends CellLangType<List<CellLangType>>{
             }
             subTableColumnIndices.add(columnIndex);
         }
-        // System.out.println("Column indices "+subTableColumnIndices);
-        // System.out.println("ROWS IN SUBTABLE "+subTable.getRows().getValue());
+        // //System.out.println("Column indices "+subTableColumnIndices);
+        // //System.out.println("ROWS IN SUBTABLE "+subTable.getRows().getValue());
         int x =0;
         for (CellLangType row : this.rows.getValue()) {
             CellList rowList = (CellList) row;
             
-            // System.out.println("ROW  ORIGINAL"+row);
+            // //System.out.println("ROW  ORIGINAL"+row);
                 CellLangType subTableRow = subTable.getRows().getValue().get(x);
                 CellList subTableRowList = (CellList) subTableRow;
-                // System.out.println("ROW IN SUBTABLE "+subTableRowList);
+                // //System.out.println("ROW IN SUBTABLE "+subTableRowList);
                 boolean rowMatches = true;
     
                 // Check each column in the subTable
@@ -1327,7 +1445,7 @@ public class CellTable extends CellLangType<List<CellLangType>>{
                     // CellLangType originalTableCell = rowList.getValue().get(originalTableColumnIndex);
                     CellLangType subTableCell = subTableRowList.getValue().get(i);
                     
-                    // System.out.println("Boolean "+subTableCell.getValue());
+                    // //System.out.println("Boolean "+subTableCell.getValue());
                     // If the cell values don't match, then this row doesn't match
                     if (! (Boolean)subTableCell.getValue()) {
                         rowMatches = false;
@@ -1378,7 +1496,7 @@ public class CellTable extends CellLangType<List<CellLangType>>{
         // Get Column
             CellTable column = this.getColumn(columnName);
 
-            System.out.println("What columns look like"+ column.getRows().getValue());
+            //System.out.println("What columns look like"+ column.getRows().getValue());
 
           // What column.getRows().getValue() look like[[ 1, ], [ 3, ], [ 5, ]]
           
@@ -1444,7 +1562,7 @@ public class CellTable extends CellLangType<List<CellLangType>>{
         // [[],[]]
         CellList rows = this.getRows(); // assuming getRows() returns List of rows
         List<CellLangType> newRows = new ArrayList<>();
-        //System.out.println(rows);
+        ////System.out.println(rows);
         for (CellLangType r: rows.getValue()) {
             CellList row = (CellList) r;
             double sum = 0;
@@ -1454,19 +1572,19 @@ public class CellTable extends CellLangType<List<CellLangType>>{
                 } else if (cell instanceof CellInteger) {
                     sum += ((CellInteger) cell).getValue(); 
                 }
-                // System.out.println("SUM "+ sum);
+                // //System.out.println("SUM "+ sum);
                 // handle other cell types as needed
             }
            CellList x = new CellList();
            x.add( new CellDouble(sum)); //[9]
 
             newRows.add(x);
-            //System.out.println(newRows); // creating a new CellDouble for each sum, change as needed
+            ////System.out.println(newRows); // creating a new CellDouble for each sum, change as needed
         }
     
         CellTable outputTable = new CellTable(new CellList(Arrays.asList( new CellString("Sum"))), new CellList(newRows)); // creating a new CellTable with the sums
-        // System.out.println(outputTable.getRows());
-        // System.out.println(outputTable.getColumns());
+        // //System.out.println(outputTable.getRows());
+        // //System.out.println(outputTable.getColumns());
         return outputTable;
     }
 

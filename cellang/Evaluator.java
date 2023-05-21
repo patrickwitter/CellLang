@@ -131,7 +131,7 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 		if(val1 instanceof CellTable || val2 instanceof CellTable)
 		{
 			
-			CellTable res = (CellTable) val1.mul(val2);
+			CellTable res = (CellTable) val1.add(val2);
 			String tag ;
 			
 			if(val1 instanceof CellTable)
@@ -167,7 +167,7 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 
 		if(val1 instanceof CellTable || val2 instanceof CellTable)
 		{
-			CellTable res = (CellTable) val1.mul(val2);
+			CellTable res = (CellTable) val1.sub(val2);
 			String tag ;
 			
 			
@@ -243,7 +243,7 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 
 		if(val1 instanceof CellTable || val2 instanceof CellTable)
 		{
-			CellTable res = (CellTable) val1.mul(val2);
+			CellTable res = (CellTable) val1.div(val2);
 			String tag ;
 			
 			
@@ -612,8 +612,8 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 	public CellLangType visitImportStatement(ImportStatement importStatement, Environment<CellLangType> state)
 			throws VisitException {
 				
-				List<Pair<String, CellTable>> result = toExcel.readTablesFromMappingsFile(importStatement.getPath());
-				for (Pair<String,CellTable> pair : result) {
+				List<Pair<String, CellLangType>> result = toExcel.readTablesFromMappingsFile(importStatement.getPath());
+				for (Pair<String,CellLangType> pair : result) {
 					state.put(pair.getKey(), pair.getValue());
 					// toExcel.CreateStaticTable(pair.getValue());
 				}
@@ -717,6 +717,39 @@ public class Evaluator implements Visitor<Environment<CellLangType>,CellLangType
 			}
 		}
 		throw new VisitException("Method does not exist on CellTable");
+	}
+
+	@Override
+	public CellLangType visitExpDollarVar(ExpDollar expVar, Environment<CellLangType> arg) throws VisitException {
+		
+		CellLangType x = expVar.getVarExp().visit(this, arg);
+		if(x instanceof CellList)
+		{	
+			CellList lst = (CellList) x;
+			if(checkCellListForPrimitives(lst))
+			{
+				lst.isabs = true;
+			}
+			else
+			{
+				throw new VisitException("Cannot make a list of non primatives absolute ");
+			}
+			return new CellNil();
+		}
+		throw new VisitException("Cannot make object absolute only List of primatives allowed ");
+	}
+
+	public static boolean checkCellListForPrimitives(CellList list) {
+		for (CellLangType element : list.getValue()) {
+			
+			if (!(element instanceof CellInteger ||
+				  element instanceof CellDouble ||
+				  element instanceof CellBoolean ||
+				  element instanceof CellString)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	

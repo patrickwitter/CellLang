@@ -264,6 +264,7 @@ factor ::= INT:ilit {: RESULT = new ExpLit(ilit); :} |
 		STRING:s {:RESULT = new ExpString(s); :} | 
 		DOUBLE:d {:RESULT = new ExpDouble(d); :} |
 		VAR:var {: RESULT = new ExpVar(var); :} |
+		DOLLAR VAR:var {: RESULT = new ExpDollar(var); :} |
 		MAPVAR:a  {: RESULT = new ExpVar(a); :} |
 		LPAREN expression:e RPAREN {: RESULT = e; :}| 
 		funCall:fc {:RESULT = fc;:} |

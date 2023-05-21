@@ -218,6 +218,12 @@ public class ToScheme implements Visitor<Void, String> {
 		throw new UnsupportedOperationException("Unimplemented method 'visitExpMethodCall'");
 	}
 
+	@Override
+	public String visitExpDollarVar(ExpDollar expVar, Void arg) throws VisitException {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Unimplemented method 'visitExpDollarVar'");
+	}
+
 	
 
 }
